@@ -1,0 +1,42 @@
+allprojects {
+    tasks.withType(Copy).all {
+        duplicatesStrategy 'exclude'
+    }
+}
+
+task buildAll {
+    group "build"
+    dependsOn("buildWar", "buildTomcatEmbedded", "buildJettyEmbedded")
+}
+
+task buildWar(type: Copy) {
+    group "build"
+    dependsOn(":app:build")
+
+    from "${project(":app").buildDir}/libs"
+    include "*.war"
+    into "${project.buildDir}/libs"
+}
+
+task buildTomcatEmbedded(type: Copy) {
+    group "build"
+    dependsOn(":tomcat:build")
+
+    from "${project(":tomcat").buildDir}/libs"
+    into "${project.buildDir}/libs"
+}
+
+task buildJettyEmbedded(type: Copy) {
+    group "build"
+    dependsOn(":jetty:build")
+
+    from "${project(":jetty").buildDir}/libs"
+    into "${project.buildDir}/libs"
+}
+
+task clean(type: Delete) {
+    group "build"
+    dependsOn(":app:clean", ":tomcat:clean", ":jetty:clean")
+
+    delete = ["build"]
+}
