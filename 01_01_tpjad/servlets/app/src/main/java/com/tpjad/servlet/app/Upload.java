@@ -2,11 +2,13 @@ package com.tpjad.servlet.app;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.annotation.*;
 import javax.servlet.http.*;
 
@@ -20,21 +22,20 @@ public class Upload extends HttpServlet {
   protected void doPost(HttpServletRequest request, HttpServletResponse response) {
     try {
       // Save the file on the disk
-      String fileName = generateFileName();
-      String path = "C:/Users/Public/Documents/" + fileName;
+      String filename = generateFileName();
+      String path = "C:/Users/Public/Documents/json/" + filename;
       for (Part part : request.getParts()) {
         part.write(path);
         part.delete();
       }
       System.out.println(path + " uploaded");
 
-      // Format the json file
-      formatJson(new BufferedReader(new FileReader(path)), new FileWriter(path));
+      formatJson(path);
 
       // Set the response with the follow-up actions (download in this case)
       response.setContentType("text/html");
       PrintWriter writer = response.getWriter();
-      setOutput(writer, fileName);
+      setOutput(writer, filename);
       writer.close();
     } catch (Exception e) {
       e.printStackTrace();
@@ -42,7 +43,7 @@ public class Upload extends HttpServlet {
   }
 
   private String generateFileName() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm:ss");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
     return LocalDateTime.now().format(formatter) + ".json";
   }
 
@@ -57,19 +58,32 @@ public class Upload extends HttpServlet {
    * Load the json content through the provided reader, format it,
    * and save it back through the provided writer.
    *
-   * @param reader How to read/load the source json
-   * @param writer How to write back/save the formatted json
+   * @param path The file to format
    */
-  private void formatJson(Reader reader, Writer writer) {
+  private void formatJson(String path) throws IOException {
+    Reader reader = new BufferedReader(new FileReader(path));
+    int i;
+    StringBuilder stringBuilder = new StringBuilder();
+    while ((i = reader.read()) != -1) {
+      stringBuilder.append((char) i);
+    }
+
+    System.out.println("Formatting json " + path);
     Gson gson = new GsonBuilder().setPrettyPrinting().create();
-    @SuppressWarnings("rawtypes") HashMap json = gson.fromJson(reader, HashMap.class);
+    Type type = new TypeToken<Map<String, String>>() {
+    }.getType();
+    Map<String, String> json = gson.fromJson(stringBuilder.toString(), type);
+    Writer writer = new FileWriter(path);
     gson.toJson(json, writer);
+
+    reader.close();
+    writer.close();
   }
 
-  private void setOutput(PrintWriter writer, String fileName) {
+  private void setOutput(PrintWriter writer, String filename) {
     writer.println("<html><head><title>Response</title></head>");
-    writer.println("<form method=\"GET\" action=\"download\" >");
-    writer.println("<input type=\"text\" name=\"fileName\" id=\"sort-input\" value=\"" + fileName + "\"/>");
+    writer.println("<form method=\"POST\" action=\"download\" >");
+    writer.println("<input type=\"text\" name=\"filename\" value=\"" + filename + "\"/>");
     writer.println("<input type=\"submit\" value=\"Download\"/>");
     writer.println("</form>");
     writer.println("</body></html>");

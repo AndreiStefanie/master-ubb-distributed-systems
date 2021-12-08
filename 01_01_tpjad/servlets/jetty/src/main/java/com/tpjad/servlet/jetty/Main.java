@@ -8,7 +8,6 @@ import javax.servlet.MultipartConfigElement;
 
 import com.tpjad.servlet.app.Root;
 import com.tpjad.servlet.app.Download;
-import com.tpjad.servlet.app.Sort;
 import com.tpjad.servlet.app.Upload;
 
 public class Main {
@@ -20,10 +19,9 @@ public class Main {
 
     context.addServlet(new ServletHolder(new Root()), "/");
     context.addServlet(new ServletHolder(new Download()), "/download");
-    context.addServlet(new ServletHolder(new Sort()), "/sort");
 
     ServletHolder fileUploadServletHolder = new ServletHolder(new Upload());
-    fileUploadServletHolder.getRegistration().setMultipartConfig(new MultipartConfigElement("/data"));
+    fileUploadServletHolder.getRegistration().setMultipartConfig(new MultipartConfigElement("C:/Users/Public/Documents/json"));
     context.addServlet(fileUploadServletHolder, "/upload");
 
     server.setHandler(context);
