@@ -45,6 +45,14 @@ Pentru deployment bazat pe war si Tomcat se copiaza `app.war` in `$CATALINA_HOME
 
 Pentru deployment cu Jetty, se copiaza `app.war` in `$JETTY_BASE\webapps`. In prealabil, este nevoie de pornirea modulelor Jetty necesare folosind comanda `java -jar $JETTY_HOME\start.jar --add-module=server,deploy,http`
 
+#### Wildfly
+
+Pentru deployment bazat pe war si Wildfly se copiaza `app.war` in `$JBOSS_HOME/standalone/deployments` si se ruleaza `$JBOSS_HOME/bin/standalone.bat`.
+
+#### Glassfish
+
+Pentru deployment bazat pe war si Glassfish se copiaza `app.war` in `$GF_HOME/glassfish/domains/domain1/autodeploy` si se ruleaza din `$GF_HOME/bin/asadmin.bat` comanda `start-domain` (si `stop-domain` pentru a opri).
+
 ### Context Extern
 
 #### Tomcat
