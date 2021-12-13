@@ -1,0 +1,19 @@
+(Spin Version 6.0.0 -- 5 December 2010)
+	+ Partial Order Reduction
+Full statespace search for:
+	never claim         	- (none specified)
+	assertion violations	+
+	cycle checks       	- (disabled by -DSAFETY)
+	invalid end states	+
+State-vector 20 byte, depth reached 11, ••• errors: 0 •••
+       14 states, stored
+        3 states, matched
+       17 transitions (= stored+matched)
+        2 atomic steps
+hash conflicts:         0 (resolved)
+    2.195	memory usage (Mbyte)
+unreached in proctype UBBUsedBikes
+	(0 of 8 states)
+unreached in proctype Student
+	(0 of 15 states)
+pan: elapsed time 0 seconds
