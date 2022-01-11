@@ -24,6 +24,7 @@ def play_minimum(plays, threshold):
     games_played = plays.groupby("user_id").count().reset_index()
     games_played = games_played[(games_played['amount'] >= threshold)]
     new_plays = plays.merge(games_played['user_id'], on='user_id')
+
     return new_plays
 
 
@@ -32,6 +33,7 @@ def drop_unplayed_or_too_popular(plays, lower_thresh, upper_thresh):
     users_played = users_played[(users_played['amount'] >= lower_thresh) &
                                 (users_played['amount'] <= upper_thresh)]
     new_plays = plays.merge(users_played['game_name'], on='game_name')
+
     return new_plays
 
 
@@ -43,6 +45,7 @@ def min_max_norm(plays):
     new_plays.columns = ['user_id', 'game_name', 'amount', 'min', 'max']
     new_plays['norm_amount'] = (new_plays['amount'] - new_plays['min'].apply(
         np.floor)) / (new_plays['max'] - new_plays['min'].apply(np.floor))
+
     return new_plays.drop(columns=['min', 'max'])
 
 
