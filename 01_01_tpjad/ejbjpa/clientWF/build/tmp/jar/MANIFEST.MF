@@ -1,0 +1,65 @@
+Manifest-Version: 1.0
+Main-Class: com.tpjad.ejb.clients.Client
+Class-Path: javaee-api-8.0.1.jar javax.mail-1.6.2.jar wildfly-http-ejb-c
+ lient-1.1.8.Final.jar jboss-ejb-client-4.0.43.Final.jar wildfly-http-tr
+ ansaction-client-1.1.8.Final.jar wildfly-transaction-client-1.1.14.Fina
+ l.jar wildfly-http-naming-client-1.1.8.Final.jar wildfly-naming-client-
+ 1.0.14.Final.jar wildfly-http-client-common-1.1.8.Final.jar jboss-marsh
+ alling-river-2.0.12.Final.jar jboss-marshalling-2.0.12.Final.jar undert
+ ow-core-2.2.12.Final.jar xnio-nio-3.8.4.Final.jar jboss-remoting-5.0.23
+ .Final.jar xnio-api-3.8.4.Final.jar jboss-threads-3.1.0.Final.jar wildf
+ ly-discovery-client-1.2.1.Final.jar wildfly-client-config-1.0.1.Final.j
+ ar wildfly-elytron-1.17.1.Final.jar wildfly-elytron-audit-1.17.1.Final.
+ jar wildfly-elytron-auth-server-deprecated-1.17.1.Final.jar wildfly-ely
+ tron-auth-server-http-1.17.1.Final.jar wildfly-elytron-auth-server-sasl
+ -1.17.1.Final.jar wildfly-elytron-realm-ldap-1.17.1.Final.jar wildfly-e
+ lytron-sasl-deprecated-1.17.1.Final.jar wildfly-elytron-sasl-auth-util-
+ 1.17.1.Final.jar wildfly-elytron-client-1.17.1.Final.jar wildfly-elytro
+ n-auth-util-1.17.1.Final.jar wildfly-elytron-credential-source-deprecat
+ ed-1.17.1.Final.jar wildfly-elytron-credential-source-impl-1.17.1.Final
+ .jar wildfly-elytron-credential-store-1.17.1.Final.jar wildfly-elytron-
+ http-deprecated-1.17.1.Final.jar wildfly-elytron-http-basic-1.17.1.Fina
+ l.jar wildfly-elytron-http-bearer-1.17.1.Final.jar wildfly-elytron-http
+ -cert-1.17.1.Final.jar wildfly-elytron-http-digest-1.17.1.Final.jar wil
+ dfly-elytron-http-external-1.17.1.Final.jar wildfly-elytron-http-spnego
+ -1.17.1.Final.jar wildfly-elytron-http-sso-1.17.1.Final.jar wildfly-ely
+ tron-http-util-1.17.1.Final.jar wildfly-elytron-http-form-1.17.1.Final.
+ jar wildfly-elytron-sasl-digest-1.17.1.Final.jar wildfly-elytron-mechan
+ ism-digest-1.17.1.Final.jar wildfly-elytron-mechanism-http-1.17.1.Final
+ .jar wildfly-elytron-sasl-oauth2-1.17.1.Final.jar wildfly-elytron-mecha
+ nism-oauth2-1.17.1.Final.jar wildfly-elytron-sasl-scram-1.17.1.Final.ja
+ r wildfly-elytron-mechanism-scram-1.17.1.Final.jar wildfly-elytron-sasl
+ -anonymous-1.17.1.Final.jar wildfly-elytron-sasl-entity-1.17.1.Final.ja
+ r wildfly-elytron-sasl-external-1.17.1.Final.jar wildfly-elytron-sasl-g
+ s2-1.17.1.Final.jar wildfly-elytron-sasl-gssapi-1.17.1.Final.jar wildfl
+ y-elytron-sasl-localuser-1.17.1.Final.jar wildfly-elytron-sasl-otp-1.17
+ .1.Final.jar wildfly-elytron-sasl-plain-1.17.1.Final.jar wildfly-elytro
+ n-sasl-1.17.1.Final.jar wildfly-elytron-http-oidc-1.17.1.Final.jar wild
+ fly-elytron-mechanism-1.17.1.Final.jar wildfly-elytron-http-1.17.1.Fina
+ l.jar wildfly-elytron-jacc-1.17.1.Final.jar wildfly-elytron-jaspi-1.17.
+ 1.Final.jar wildfly-elytron-realm-token-1.17.1.Final.jar wildfly-elytro
+ n-json-util-1.17.1.Final.jar wildfly-elytron-mechanism-gssapi-1.17.1.Fi
+ nal.jar wildfly-elytron-realm-jdbc-1.17.1.Final.jar wildfly-elytron-rea
+ lm-1.17.1.Final.jar wildfly-elytron-ssl-1.17.1.Final.jar wildfly-elytro
+ n-x500-deprecated-1.17.1.Final.jar wildfly-elytron-x500-principal-1.17.
+ 1.Final.jar wildfly-elytron-auth-server-1.17.1.Final.jar wildfly-elytro
+ n-password-impl-1.17.1.Final.jar wildfly-elytron-credential-1.17.1.Fina
+ l.jar wildfly-elytron-auth-1.17.1.Final.jar wildfly-elytron-keystore-1.
+ 17.1.Final.jar wildfly-elytron-security-manager-1.17.1.Final.jar wildfl
+ y-elytron-permission-1.17.1.Final.jar wildfly-elytron-util-1.17.1.Final
+ .jar wildfly-elytron-x500-cert-acme-1.17.1.Final.jar wildfly-elytron-jo
+ se-jwk-1.17.1.Final.jar wildfly-elytron-x500-cert-1.17.1.Final.jar wild
+ fly-elytron-x500-1.17.1.Final.jar wildfly-elytron-x500-cert-util-1.17.1
+ .Final.jar wildfly-elytron-asn1-1.17.1.Final.jar wildfly-elytron-digest
+ -1.17.1.Final.jar wildfly-elytron-base-1.17.1.Final.jar jboss-logging-3
+ .4.2.Final.jar jboss-ejb-api_3.2_spec-2.0.0.Final.jar wildfly-elytron-p
+ rovider-util-1.17.1.Final.jar wildfly-common-1.5.4.Final.jar sshd-commo
+ n-2.7.0.jar jcl-over-slf4j-1.7.32.jar jose4j-0.7.9.jar slf4j-api-1.7.32
+ .jar wildfly-elytron-encryption-1.17.1.Final.jar httpclient-4.5.13.jar 
+ httpcore-4.4.14.jar commons-codec-1.15.jar wildfly-elytron-jose-util-1.
+ 17.1.Final.jar jackson-core-2.12.3.jar jackson-databind-2.12.3.jar jack
+ son-annotations-2.12.3.jar wildfly-elytron-security-manager-action-1.17
+ .1.Final.jar jboss-ejb3-ext-api-2.3.0.Final.jar jboss-connector-api_1.7
+ _spec-2.0.0.Final.jar jboss-transaction-api_1.3_spec-2.0.0.Final.jar ac
+ tivation-1.1.jar metainf-services-1.7.jar commons-logging-1.2.jar
+

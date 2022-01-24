@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Main-Class: com.tpjad.ejb.clients.Client
+Class-Path: glassfish-naming-6.2.4.jar internal-api-6.2.4.jar config-api
+ -6.2.4.jar common-util-6.2.4.jar glassfish-api-6.2.4.jar nucleus-grizzl
+ y-all-6.2.4.jar grizzly-config-6.2.4.jar hk2-3.0.2.jar config-types-6.2
+ .4.jar hk2-config-6.2.4.jar hk2-core-3.0.2.jar hk2-runlevel-3.0.2.jar h
+ k2-locator-3.0.2.jar hk2-api-3.0.2.jar hk2-utils-3.0.2.jar class-model-
+ 3.0.2.jar jaxb-osgi-3.0.2.jar jakarta.xml.bind-api-3.0.1.jar scattered-
+ archive-api-6.2.4.jar glassfish-corba-omgapi-4.2.4.jar management-api-3
+ .2.3.jar jakarta.annotation-api-2.0.0.jar jakarta.inject-api-2.0.0.jar 
+ aopalliance-repackaged-3.0.2.jar javassist-3.22.0-GA.jar asm-commons-9.
+ 1.jar asm-util-9.1.jar asm-analysis-9.1.jar asm-tree-9.1.jar asm-9.1.ja
+ r jakarta.activation-2.0.1.jar tiger-types-6.2.4.jar hibernate-validato
+ r-7.0.1.Final.jar grizzly-portunif-3.0.1.jar grizzly-http2-3.0.1.jar gr
+ izzly-http-server-3.0.1.jar grizzly-http-3.0.1.jar grizzly-framework-3.
+ 0.1.jar jakarta.validation-api-3.0.0.jar jboss-logging-3.4.1.Final.jar 
+ classmate-1.5.1.jar
+
