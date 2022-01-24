@@ -1,0 +1,44 @@
+plugins {
+    id "war"
+}
+
+project.ext {
+    glassfish = "C:\\Tools\\glassfish6\\glassfish\\domains\\domain1\\autodeploy"
+    wildfly = "C:\\Tools\\wildfly-26.0.0.Beta1\\standalone\\deployments"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    providedCompile "javax:javaee-api:+"
+}
+
+war {
+    baseName "server"
+}
+
+task deployGlassfish(type: Copy) {
+    group "build"
+    dependsOn("war", "cleanGlassfish")
+
+    from "${buildDir}/libs"
+    into project.glassfish
+}
+
+task deployWildfly(type: Copy) {
+    group "build"
+    dependsOn("war", "cleanWildfly")
+
+    from "${buildDir}/libs"
+    into project.wildfly
+}
+
+task cleanGlassfish(type: Delete) {
+    delete fileTree(project.glassfish)
+}
+
+task cleanWildfly(type: Delete) {
+    delete fileTree(project.wildfly)
+}

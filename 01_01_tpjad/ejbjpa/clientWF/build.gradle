@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'javax:javaee-api:+'
+    implementation 'org.wildfly:wildfly-ejb-client-bom:25.0.1.Final'
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.tpjad.ejb.clients.Client',
+                'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' '))
+    }
+    from(configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) })
+}
