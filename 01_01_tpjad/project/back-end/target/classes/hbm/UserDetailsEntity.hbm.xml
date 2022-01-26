@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.bet.dao.UserDetailsEntity" table="user_details" schema="lunar_bet">
+        <id name="detailId" type="int" column="detailID">
+            <generator class="identity"/>
+        </id>
+        <property name="userId" type="int" column="userID"/>
+        <property name="email">
+            <column name="email" sql-type="varchar(45)" length="45" not-null="true"/>
+        </property>
+        <property name="balance">
+            <column name="balance" sql-type="float" precision="-1" not-null="true"/>
+        </property>
+        <many-to-one name="userByUserId" class="com.bet.dao.UserEntity" column="userID" insert="false" update="false"
+                     lazy="false"/>
+    </class>
+</hibernate-mapping>

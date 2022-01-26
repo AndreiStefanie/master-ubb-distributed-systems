@@ -1,0 +1,511 @@
+html,
+body,
+#container {
+  height: 100%;
+}
+
+body > #container {
+  height: auto;
+  min-height: 100%;
+}
+
+body {
+  background-color: #d1d1d1;
+  overflow: hidden;
+}
+
+table,
+th,
+td {
+  border: 2px solid grey;
+  border-collapse: collapse;
+  background-color: white;
+  padding: 5px;
+  width: 100%;
+  font-size: large;
+  text-align: center;
+}
+
+th,
+td {
+  padding: 15px;
+  width: 20%;
+}
+
+th {
+  color: #f06d06;
+}
+
+table tr:hover {
+  cursor: pointer;
+}
+
+h2 {
+  color: white;
+}
+
+input[type='number'] {
+  width: 20%;
+}
+
+input[type='text'] {
+  width: 100%;
+}
+
+input[type='password'] {
+  width: 100%;
+}
+
+select {
+  width: 70%;
+}
+
+input[type='submit'] {
+  background-color: #2384cd;
+  color: white;
+  width: 40%;
+  padding: 10px;
+  margin: 5px;
+}
+
+input[type='submit']:hover {
+  background-color: #b89ff0;
+  color: white;
+}
+
+.menu {
+  list-style: none;
+  border-bottom: 0.1em solid black;
+  margin-bottom: 2em;
+  padding: 0 0 0.5em;
+}
+
+.menu:before {
+  content: '[';
+}
+
+.menu:after {
+  content: ']';
+}
+
+.menu > li {
+  display: inline;
+}
+
+.menu > li:before {
+  content: '|';
+  padding-right: 0.3em;
+}
+
+.menu > li:nth-child(1):before {
+  content: '';
+  padding: 0;
+}
+
+.hpButton {
+  width: 300px;
+  height: 100px;
+  background-color: #2cae25;
+  color: white;
+  font-size: large;
+  position: relative;
+  top: 20%;
+}
+
+header {
+  position: absolute;
+  background-color: white;
+  height: 8vh;
+  width: 100vw;
+  top: 0;
+  border-bottom: groove;
+  border-color: #f06d06;
+}
+
+h1 {
+  position: relative;
+  left: 2vw;
+  font-weight: bold;
+  color: #f06d06;
+  width: 12vw;
+}
+
+.categories {
+  position: absolute;
+  left: 45vw;
+  top: 2vh;
+  font-size: 3vh;
+}
+
+.betCategory {
+  color: #7a43b6;
+}
+
+.betCategory:hover {
+  cursor: pointer;
+}
+
+.resultCategory {
+  color: #7a43b6;
+}
+
+.resultCategory:hover {
+  cursor: pointer;
+}
+
+.separator {
+  color: #7a43b6;
+}
+
+.sportSelect {
+  position: relative;
+  left: 2.5vw;
+  top: 10vh;
+  font-size: 1.5vw;
+  color: #f06d06;
+  background-color: white;
+  border: solid white;
+  width: 7vw;
+  height: 18vh;
+  text-align: center;
+}
+
+.selectFootball {
+  position: relative;
+  height: 34%;
+}
+
+.selectBasket {
+  height: 33%;
+}
+
+.selectTennis {
+  height: 33%;
+}
+
+.selectFootball:hover,
+.selectBasket:hover,
+.selectTennis:hover {
+  background-color: #8c8c8c;
+  cursor: pointer;
+}
+
+.active {
+  border-bottom: solid #7a43b6;
+}
+
+.accountButtons {
+  position: absolute;
+  right: 5vw;
+  top: 1.5vh;
+  height: 4vh;
+  width: 15vw;
+  padding: 1vh;
+  font-size: larger;
+  color: #f06d06;
+}
+
+.loginAccount {
+  position: absolute;
+  top: 20%;
+  width: 50%;
+  height: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 3px solid #f06d06;
+  box-shadow: inset 0 0 0 0 #31302b;
+  transition: all ease 0.8s;
+  font-family: 'OpenSansBold', sans-serif;
+}
+
+.registerAccount {
+  position: absolute;
+  top: 20%;
+  left: 55%;
+  width: 50%;
+  height: 100%;
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 3px solid #f06d06;
+  box-shadow: inset 0 0 0 0 #31302b;
+  transition: all ease 0.8s;
+  font-family: 'OpenSansBold', sans-serif;
+}
+
+.loginAccount:hover,
+.registerAccount:hover {
+  background-color: #8c8c8c;
+  color: #7a43b6;
+  cursor: pointer;
+  box-shadow: inset 10vw 0 0 0 #e0e0e0;
+}
+
+.table {
+  position: relative;
+  top: -1vh;
+  left: 22%;
+  width: 50vw;
+}
+
+.checkTicket {
+  position: absolute;
+  right: 1vw;
+  width: 15vw;
+  height: 15vh;
+  top: 10vh;
+  background-color: white;
+}
+
+.searchTicket {
+  position: relative;
+  width: 100%;
+  top: -10px;
+  color: black;
+}
+
+.searchDiv {
+  position: relative;
+  font-style: italic;
+  width: 30vw;
+  top: -9.5vh;
+  left: 30%;
+}
+
+.currentTicket {
+  position: absolute;
+  right: 1vw;
+  width: 20vw;
+  min-height: 18vh;
+  top: 30vh;
+  color: white;
+  background-color: #f06d06;
+}
+
+.selectedToBet {
+  position: relative;
+  color: #0f0f0f;
+  margin-bottom: 15px;
+}
+
+.ticketButtons {
+  position: relative;
+  background: white;
+  width: 100%;
+  top: 30px;
+  padding: 2px;
+  margin-bottom: 5px;
+  color: #f06d06;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 3px solid #f06d06;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 0 #31302b;
+  transition: all ease 0.8s;
+  font-family: 'OpenSansBold', sans-serif;
+}
+
+.ticketButtons:hover {
+  box-shadow: inset 100px 0 0 0 #e0e0e0;
+}
+
+.searchTicket {
+  position: relative;
+  top: 5%;
+  height: 30%;
+  text-align: center;
+}
+
+.winning {
+  background-color: #3e8f3e;
+}
+
+.losing {
+  background-color: #ff1c15;
+}
+
+.progress {
+  background-color: white;
+}
+
+.ticketResult {
+  position: absolute;
+  width: 100%;
+  height: 30%;
+  bottom: 5%;
+  font-size: x-large;
+  text-align: center;
+}
+
+.userBalance {
+  position: absolute;
+  top: 8vh;
+  right: 18vw;
+  height: 6vh;
+  width: 8vw;
+  background-color: white;
+  border: 3px solid #f06d06;
+  border-top: 1px solid white;
+  text-align: center;
+  color: #f06d06;
+  font-size: 20px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  font-family: 'OpenSansBold', sans-serif;
+}
+
+.buttonsGenerate {
+  color: #31302b;
+  background: #fff;
+  padding: 12px 17px;
+  margin: 5px;
+  font-family: 'OpenSansBold', sans-serif;
+  border: 3px solid #31302b;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border-radius: 1px;
+  display: inline-block;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 0 #31302b;
+  transition: all ease 0.8s;
+  width: 12vw;
+}
+
+.buttonsGenerate:hover {
+  box-shadow: inset 12vw 0 0 0 #e0e0e0;
+  color: #f06d06;
+}
+
+.buttonsDiv {
+  position: absolute;
+  top: 0.3vh;
+  left: 35vw;
+  background-color: white;
+}
+
+.topDiv {
+  width: 100vw;
+  height: 50px;
+  top: 0;
+  left: 0;
+  background: #2384cd;
+  position: fixed;
+}
+
+.topDivText {
+  position: absolute;
+  left: 4vw;
+  top: 1vh;
+  font-size: 3vh;
+  color: white;
+}
+
+.displayDiv {
+  position: relative;
+  left: 18vw;
+  height: 5vh;
+  top: 1vh;
+  color: white;
+  width: 13vw;
+}
+
+.userDisplay {
+  position: relative;
+  font-size: x-large;
+  width: 5vw;
+  left: 6vw;
+  top: -4.5vh;
+  border: groove white thin;
+  text-align: center;
+  cursor: pointer;
+}
+
+.formArea {
+  top: 10px;
+  position: absolute;
+  height: 50px;
+  width: 500px;
+  text-align: center;
+  background-color: #d7bf87;
+}
+
+.formBody {
+  position: relative;
+  left: 2%;
+  top: 10px;
+  width: 120%;
+}
+
+.sellButton {
+  position: relative;
+  left: 2vw;
+  top: 1px;
+  width: 8vw;
+  background-color: #2384cd;
+  color: white;
+}
+
+.inputFields {
+  width: 70%;
+  position: relative;
+  right: 10px;
+  text-align: right;
+}
+
+table#accountsTable {
+  position: absolute;
+  left: 1050px;
+}
+
+table#accountsTable td:nth-child(2) {
+  width: 10%;
+}
+
+.passCheckbox {
+  position: absolute;
+  right: -60px;
+  top: 3.5vh;
+  width: 100px;
+}
+
+.formAreaUser {
+  top: 20px;
+  position: absolute;
+  height: 29vh;
+  left: 32vw;
+  width: 30vw;
+  text-align: center;
+  background-color: #c5c5c5;
+}
+
+.logoutButton {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  width: 50px;
+}
+
+.reportDiv {
+  position: absolute;
+  top: 20px;
+  height: 15vh;
+  width: 25vw;
+  left: 64vw;
+  background-color: #2384cd;
+}
+
+.reportForm {
+  text-align: center;
+  top: 4vh;
+  position: relative;
+}

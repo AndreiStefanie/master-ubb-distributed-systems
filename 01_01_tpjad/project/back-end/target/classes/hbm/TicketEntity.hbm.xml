@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.bet.dao.TicketEntity" table="ticket" schema="lunar_bet">
+        <id name="ticketId" column="ticketID" type="int">
+            <generator class="identity"/>
+        </id>
+        <property name="odds">
+            <column name="odds" sql-type="float" precision="-1" not-null="true"/>
+        </property>
+        <property name="betAmount">
+            <column name="betAmount" sql-type="float" precision="-1" not-null="true"/>
+        </property>
+        <property name="userId" type="int" column="userID"/>
+        <property name="status">
+            <column name="status" sql-type="varchar(20)" length="20" not-null="true"/>
+        </property>
+        <many-to-one name="userByUserId" class="com.bet.dao.UserEntity" column="userID"
+                     insert="false" update="false" cascade="none" lazy="false"/>
+        <set name="ticketMatchRelsByTicketId" inverse="true" lazy="false">
+            <key column="ticketID"/>
+            <one-to-many not-found="ignore" class="com.bet.dao.TicketMatchRelEntity"/>
+        </set>
+    </class>
+</hibernate-mapping>

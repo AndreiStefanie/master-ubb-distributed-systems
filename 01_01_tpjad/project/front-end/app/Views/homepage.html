@@ -1,0 +1,77 @@
+<div class="wrapper">
+    <header>
+        <h1>LunarBet</h1>
+        <div class="categories">
+            <a class="betCategory" ng-class="{ active : showBets}" ng-click="displayContent('bet')">Bets </a>
+            <a class="separator">|</a>
+            <a class="resultCategory" ng-class="{ active : showResults}" ng-click="displayContent('result')">
+                Results</a>
+        </div>
+        <div class="accountButtons">
+            <div class="loginAccount" ng-click="go('/login')">Login</div>
+            <div class="registerAccount" ng-click="go('/register')">Register</div>
+        </div>
+    </header>
+    <div class="sportSelect">
+        <div class="selectFootball" ng-class="{ active : selectedSport === 0 }" ng-click="selectEvents('football')">
+            Football
+        </div>
+        <div class="selectBasket" ng-class="{ active : selectedSport === 1 }" ng-click="selectEvents('basket')">Basket
+        </div>
+        <div class="selectTennis" ng-class="{ active : selectedSport === 2 }" ng-click="selectEvents('tennis')">Tennis
+        </div>
+    </div>
+    <div class="searchDiv">
+        <form name="form" class="formBody">
+            <label for="searchField"></label>
+            <input id="searchField" type="text" placeholder="search" required ng-model="searchValue"/><br/>
+        </form>
+    </div>
+    <div class="betOffer" ng-show="showBets">
+        <table class="table table-condensed table-bordered table-striped">
+            <tr>
+                <th style="width: 34%">Match</th>
+                <th style="width: 33%">Date</th>
+                <th style="width: 11%">1</th>
+                <th style="width: 11%">X</th>
+                <th style="width: 11%">2</th>
+            </tr>
+            <tr ng-repeat="e in selectedEvents | filter: searchValue">
+                <td style="width: 34%">{{ e.teamA }} - {{ e.teamB }}</td>
+                <td style="width: 33%">{{ convertToDate(e.moment) }}</td>
+                <td style="width: 11%">{{e.bet1}}</td>
+                <td style="width: 11%">{{e.betX}}</td>
+                <td style="width: 11%">{{e.bet2}}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="resultsDiv" ng-show="showResults">
+        <table class="table table-condensed table-bordered table-striped">
+            <tr>
+                <th style="width: 33%">Match</th>
+                <th style="width: 33%">Date</th>
+                <th style="width: 33%">Result</th>
+            </tr>
+            <tr ng-repeat="r in selectedResults | filter: searchValue">
+                <td style="width: 34%">{{ r.eventByMatchId.teamA }} - {{ r.eventByMatchId.teamB }}</td>
+                <td style="width: 33%">{{ convertToDate(r.eventByMatchId.moment) }}</td>
+                <td style="width: 33%">{{ r.resultA }} - {{ r.resultB }}</td>
+            </tr>
+        </table>
+    </div>
+    <div class="checkTicket"
+         ng-class="{ 'winning' : ticketWon === 1, 'losing' : ticketWon === 0, 'progress' : ticketWon === -1 }">
+        <div class="searchTicket">
+            <form name="ticketForm" style="'text-align': center">
+                <label for="ticketField"></label>
+                <input id="ticketField" class=type="text" placeholder="Ticket number" ng-model="ticketNumber"/><br/>
+                <button type="button" ng-click="checkTicket()" style="position: relative; width: 100%; top: 10px;">
+                    Verify
+                </button>
+            </form>
+        </div>
+        <div ng-show="showTicketResult" class="ticketResult">
+            {{ ticketResult }}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.bet.dao.UserEntity" table="user" schema="lunar_bet">
+        <id name="userId" type="int" column="userID">
+            <generator class="identity"/>
+        </id>
+        <property name="username">
+            <column name="username" sql-type="varchar(45)" length="45"/>
+        </property>
+        <property name="password">
+            <column name="password" sql-type="varchar(45)" length="45"/>
+        </property>
+        <property name="type">
+            <column name="type" sql-type="varchar(45)" length="45"/>
+        </property>
+        <set name="ticketsByUserId" inverse="true" lazy="false">
+            <key column="userID"/>
+            <one-to-many not-found="ignore" class="com.bet.dao.TicketEntity"/>
+        </set>
+        <set name="userDetailssByUserId" inverse="true" lazy="false">
+            <key column="userID"/>
+            <one-to-many not-found="ignore" class="com.bet.dao.UserDetailsEntity"/>
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,50 @@
+{
+  "name": "angular-tablescroll",
+  "version": "2.0.0",
+  "authors": [
+    "Mike Allison <dj.mikeallison@gmail.com>"
+  ],
+  "description": "An easy to implement angular module that simplifies adding both horizontal and vertical scrolling with static header and footer to any html table. It will automatically (and reactively) size to it's parent container, or a given set of dimensions.",
+  "main": "angular-tablescroll.js",
+  "keywords": [
+    "angular",
+    "table",
+    "scroll",
+    "scrolling",
+    "static",
+    "header",
+    "footer",
+    "scroller"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/mike-allison/angular-tablescroll",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "sample",
+    "dist",
+    "nuget",
+    "angular-tablescroll.ts",
+    "*.nuspec",
+    "package.json"
+  ],
+  "devDependencies": {
+    "dt-angular": "~1.2.16"
+  },
+  "dependencies": {
+    "angular": ">=1.2.0"
+  },
+  "_release": "2.0.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "2.0.0",
+    "commit": "d7404901baaa0a24f0c4a15bf7ebf69fe7f71f45"
+  },
+  "_source": "git://github.com/mike-allison/angular-tablescroll.git",
+  "_target": "^2.0.0",
+  "_originalSource": "angular-tablescroll",
+  "_direct": true
+}

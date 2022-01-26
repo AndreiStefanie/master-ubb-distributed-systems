@@ -1,0 +1,18 @@
+<div class="wrapper">
+    <header>
+        <h1>LunarBet</h1>
+        <div class="accountButtons">
+            <div class="registerAccount" ng-click="logout()">Logout</div>
+        </div>
+    </header>
+
+    <div class="buttonsDiv">
+        <button class="buttonsGenerate" ng-click="generateEvents()">Generate Events</button>
+        <!--<br/>-->
+        <button class="buttonsGenerate" ng-click="generateResults()">Generate Results</button>
+    </div>
+
+    <canvas id="bar" class="chart chart-bar"
+            chart-data="data" chart-labels="labels" chart-colors="colors"> chart-series="series"
+    </canvas>
+</div>
