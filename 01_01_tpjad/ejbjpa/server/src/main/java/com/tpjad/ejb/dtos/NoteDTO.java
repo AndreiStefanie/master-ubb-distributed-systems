@@ -5,6 +5,8 @@ import com.tpjad.ejb.entities.Note;
 import java.io.Serializable;
 
 public class NoteDTO implements Serializable {
+  private static final long serialVersionUID = 1L;
+
   private Long id = 1L;
   private String note = "";
   private String username = "";

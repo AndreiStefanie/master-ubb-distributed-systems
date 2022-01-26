@@ -3,7 +3,7 @@ plugins {
 }
 
 project.ext {
-    glassfish = "C:\\Tools\\glassfish6\\glassfish\\domains\\domain1\\autodeploy"
+    glassfish = "C:\\Tools\\glassfish5\\glassfish\\domains\\domain1\\autodeploy"
     wildfly = "C:\\Tools\\wildfly-26.0.0.Beta1\\standalone\\deployments"
 }
 
@@ -21,7 +21,7 @@ war {
 
 task deployGlassfish(type: Copy) {
     group "build"
-    dependsOn("war", "cleanGlassfish")
+    dependsOn("war")
 
     from "${buildDir}/libs"
     into project.glassfish

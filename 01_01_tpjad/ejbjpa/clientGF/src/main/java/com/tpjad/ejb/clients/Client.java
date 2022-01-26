@@ -3,11 +3,10 @@ package com.tpjad.ejb.clients;
 import com.tpjad.ejb.dtos.NoteDTO;
 import com.tpjad.ejb.interfaces.UserNotesRemote;
 
-import java.util.*;
 import javax.naming.*;
 
 public class Client {
-  static final String JNDIFacadeR = "java:global/server/UserNotesBean!com.tpjad.ejb.interfaces.UserNotesRemote";
+  static final String JNDIFacadeR = "com.tpjad.ejb.interfaces.UserNotesRemote";
 
   public static void main(String[] args) throws Exception {
     Context context = createInitialContext();
@@ -26,11 +25,12 @@ public class Client {
   }
 
   private static Context createInitialContext() throws NamingException {
-    Properties jndiProperties = new Properties();
-    jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.enterprise.naming.impl.SerialInitContextFactory");
-    jndiProperties.put("org.omg.CORBA.ORBInitialHost", "localhost");
-    jndiProperties.put("org.omg.CORBA.ORBInitialPort", "3700");
+    // Properties jndiProperties = new Properties();
+    // jndiProperties.put(Context.INITIAL_CONTEXT_FACTORY,
+    // "com.sun.enterprise.naming.impl.SerialInitContextFactory");
+    // jndiProperties.put("org.omg.CORBA.ORBInitialHost", "localhost");
+    // jndiProperties.put("org.omg.CORBA.ORBInitialPort", "3700");
 
-    return new InitialContext(jndiProperties);
+    return new InitialContext();
   }
 }

@@ -5,7 +5,7 @@ import javax.persistence.*;
 @MappedSuperclass
 abstract class Base {
   @Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id = 0L;
 
   public Long getId() {

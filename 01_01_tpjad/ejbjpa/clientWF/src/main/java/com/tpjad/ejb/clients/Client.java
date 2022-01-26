@@ -16,12 +16,12 @@ public class Client {
     System.out.println("Client started");
 
     // Add a new user note
-    proxy.addNoteForUserR("Build git", "Linus");
+    proxy.addNoteForUserR("Build git on " + java.time.LocalDate.now(), "Linus");
 
     // Print all the user notes
-    System.out.println("Notes: \n");
+    System.out.println("Notes:");
     for (NoteDTO noteDTO : proxy.getAllNotesR()) {
-      System.out.println("user:" + noteDTO.getUsername() + ", note:" + noteDTO.getNote());
+      System.out.println("user: " + noteDTO.getUsername() + ", note: " + noteDTO.getNote());
     }
   }
 

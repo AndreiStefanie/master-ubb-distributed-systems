@@ -5,6 +5,7 @@ import java.util.*;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "users")
 public class User extends Base implements Serializable {
   private String name = "";
   @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)

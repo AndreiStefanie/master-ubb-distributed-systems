@@ -7,13 +7,12 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.glassfish.main.common:glassfish-naming:6.2.4'
+    implementation 'org.glassfish.main.common:glassfish-naming:5.0.1'
 }
 
 jar {
     manifest {
-        attributes('Main-Class': 'com.tpjad.ejb.clients.Client',
-                'Class-Path': configurations.runtimeClasspath.files.collect { it.getName() }.join(' '))
+        attributes('Main-Class': 'com.tpjad.ejb.clients.Client')
     }
     from(configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) })
 }

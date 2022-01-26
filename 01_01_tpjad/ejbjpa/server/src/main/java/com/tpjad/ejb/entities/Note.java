@@ -4,6 +4,7 @@ import java.io.*;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "notes")
 public class Note extends Base implements Serializable {
   private String note = "";
   @ManyToOne
