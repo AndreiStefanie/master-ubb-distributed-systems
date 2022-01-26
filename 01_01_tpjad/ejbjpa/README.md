@@ -30,15 +30,27 @@ Aplicatia server detine persistenta entitatilor `User` si `Note` care sunt in re
 
 Pentru functiile implementate din `LogicLocal` se folosesc clasele de entitati `User` si `Note` iar pentru functiile implementate din `LogicRemote` care va fi folosita la invocarea remote prin `JNDI` se folosesc clasele de tip Data Tansfer Object `NoteDTO` si `UserDTO`.
 
-### Client
+### Clients
 
 Aplicatia client care este de tip servlet foloseste doua fisiere statice pentru randare: `note.jsp` pentru afisarea aplicatiei propriu-zise si `error.jsp` pentru afisarea erorilor.
 
-Aplicatia client care se foloseste de invocarea `JNDI` este facuta pentru a fi rulata pe Wildfly. Aceasta contine interfata folosita in aplicatia server `LogicRemote` si obiectele de tip DTO, `NoteDTO` si `UserDTO`. Aceasta este o aplicatie simpla de consola care initializeaza parametrii necesari pentru `JNDI` si apoi invoca printr-un obiect proxy, obiectul de tip stateless bean din aplicatia server, iar apoi executa cateva operatii cu acesta.
+Aplicatiile client care foloseste comunicarea prin `JNDI` este facuta pentru a fi rulata pe ASs Glassfish si Wildfly. Acestea contin interfata folosita in aplicatia server `LogicRemote` si obiectele de tip DTO, `NoteDTO` si `UserDTO`. Aceasta este o aplicatie simpla de consola care initializeaza parametrii necesari pentru `JNDI` si apoi invoca printr-un obiect proxy, obiectul de tip stateless bean din aplicatia server, iar apoi executa cateva operatii cu acesta.
 
 ## Build si Deployment
 
-Aplicatia foloseste **gradle** pentru build. Din directorul server, se ruleaza comanda `clean build deployGlassfish deployWildfly`. Aceasta va build-ui atat aplicatia in format war, cat si va face deploymentul acestuia pe serverele Glassfish si Wildfly.
+### Glassfish
+
+- Create a new JDBC connection pool `create-jdbc-connection-pool --restype javax.sql.DataSource --datasourceclassname com.mysql.cj.jdbc.MysqlConnectionPoolDataSource --property "user=root:url=jdbc\\:mysql\\://localhost\\:3306/tpjad?useTimeZone\\=true&serverTimezone\\=UTC&autoReconnect\\=true&useSSL\\=false" MySqlPool`
+- Create a new data source `create-jdbc-resource --connectionpoolid MySqlPool jdbc/mysql`
+- Adjust `persistence.xml` if needed to use the previously created data source
+- Build and deploy the server+servlet app `clean build deployGlassfish`
+
+### Wildfly
+
+- Create a new connection pool `module add --name=com.mysql --resources=mysql-connector-java.jar --dependencies=javax.api,javax.transaction.api /subsystem=datasources/jdbc-driver=mysql: add(driver-name=mysql,driver-module-name=com.mysql,driver-xa-datasource-class-name=com.mysql.cj.jdbc.MysqlXADataSource)`
+- Create a new data source `data-source add --name=MySqlDS --driver-name=mysql --jndi-name=java:jboss/datasources/MySqlDS --connection-url=jdbc:mysql://localhost:3306/tpjad --user-name=root --password=password --enabled=true`
+- Adjust `persistence.xml` if needed to use the previously created data source
+- Build and deploy the server+servlet app `clean build deployWildfly`
 
 Proiectul are la baza mai multe task-uri de gradle pentru o modularizare mai buna.
 
