@@ -15,47 +15,40 @@
 	
 */
 
-mtype = {startDetection, noMovement, isMovement, isDay, isNight}
+mtype = {startDetection, noMovement, isMovement, isDay, isNight, ownerEntersRoom, ownerLeavesRoom}
 chan signal = [0] of {mtype};
 
 bool musicPlaying = false;
 bool thereIsMovement = false;
 bool motionSensorOn = false;
-byte volumeBuffer;
 byte hour = 7;
+
 byte volumeAdjustment = 0;
+byte volumeBuffer;
+bool incrementBuffer = false;
 
 active proctype SoundSystem() {
-
-	turnOn: atomic {
-		printf("Starting motion detection");
-
-		signal!startDetection;
-
-		goto checkingMotionAndHour;
-	}
-	
   checkingMotionAndHour: {
     if 
-      :: signal?isMovement -> atomic {
-        printf("There is someone in the room");
-        volumeAdjustment = 0;
-      }
-      :: signal?noMovement -> atomic {
-        printf("No one in the room");
-        volumeAdjustment = 20;
-      }
-      :: signal?isDay -> atomic {
-        printf("It's a beatiful day!");
-        musicPlaying = true;
-				signal!startDetection
-      }
-      :: signal?isNight -> atomic {
-        printf("Time to get some rest");
-        musicPlaying = false;
-				motionSensorOn = false;
-				goto stopSoundSystem;
-      }
+		:: signal?isMovement -> atomic {
+			printf("There is someone in the room");
+			volumeAdjustment = 0;
+		}
+		:: signal?noMovement -> atomic {
+			printf("No one in the room");
+			volumeAdjustment = 20;
+		}
+		:: signal?isDay -> atomic {
+			printf("It's a beatiful day!");
+			musicPlaying = true;
+			signal!startDetection
+		}
+		:: signal?isNight -> atomic {
+			printf("Time to get some rest");
+			musicPlaying = false;
+			motionSensorOn = false;
+			goto stopSoundSystem;
+		}
     fi;
 
 		goto checkingMotionAndHour;
@@ -70,30 +63,43 @@ active proctype MotionSensor() {
 	startMotionSensor: atomic {
 		if
     :: signal?startDetection -> atomic {
-        printf("Starting motion detection");
-        volumeBuffer = 0;
-				motionSensorOn = true;
-        goto detectingMovement;
-      }
+			printf("Starting motion detection");
+			volumeBuffer = 0;
+			motionSensorOn = true;
+			goto detectingMovement;
+		}
 		fi;
 	}
 	
   detectingMovement: atomic {
 		printf("Looking for motion");
-		volumeBuffer++;
-		
-		thereIsMovement -> atomic {
-				volumeBuffer >= 5 -> {
-					volumeBuffer = 0;
+
+		if
+		:: incrementBuffer -> {
+			volumeBuffer++;
+			volumeBuffer >= 5 -> {
+				volumeBuffer = 0;
+				incrementBuffer = false;
+				thereIsMovement -> {
 					signal!isMovement;
 				}
-			}
-		!thereIsMovement -> atomic {
-				volumeBuffer >= 5 -> {
-					volumeBuffer = 0;
+				!thereIsMovement -> {
 					signal!noMovement;
 				}
 			}
+		}
+		fi;
+		
+		if
+		:: signal?ownerLeavesRoom -> atomic {
+			incrementBuffer = true;
+			thereIsMovement = true;
+		}
+		:: signal?ownerEntersRoom -> atomic {
+			incrementBuffer = true;
+			thereIsMovement = false;
+		}
+		fi;
 
 		goto detectingMovement;
 	}
@@ -104,24 +110,25 @@ active proctype Watch() {
 		printf("Time flies");
 
 		hour++;
-		hour == 24 -> {
-				hour = 0;
-			}
-
-		hour == 8 -> {
-				signal!isDay;
-			}
-		hour == 22 -> {
-				signal!isNight;
-			}
-		hour == 12 -> {
-				printf("Owner leaves the room");
-				thereIsMovement = false
-			}
-		hour == 14 -> {
-				printf("Owner comes back");
-				thereIsMovement = true
-			}
+		if
+		:: hour == 24 -> {
+			hour = 0;
+		}
+		:: hour == 8 -> {
+			signal!isDay;
+		}
+		:: hour == 22 -> {
+			signal!isNight;
+		}
+		:: hour == 12 -> {
+			printf("Owner leaves the room");
+			signal!ownerLeavesRoom;
+		}
+		:: hour == 14 -> {
+			printf("Owner comes back");
+			signal!ownerEntersRoom;
+		}
+		fi;
 		
 		goto timePasses;
 	}
