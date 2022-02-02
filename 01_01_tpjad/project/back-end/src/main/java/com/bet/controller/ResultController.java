@@ -3,6 +3,7 @@ package com.bet.controller;
 import com.bet.dao.*;
 import com.bet.util.MailService;
 import org.hibernate.Query;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -75,20 +76,20 @@ public class ResultController {
   public int generateRandomResults() {
     List<EventEntity> eventsForTickets = new ArrayList<>();
     Timestamp now = new Timestamp(System.currentTimeMillis());
-    String stm = "FROM EventEntity e WHERE moment < :moment " + "AND e NOT IN (SELECT r.eventByMatchId FROM ResultsEntity r)";
-    Query query = session.createQuery(stm).setString("moment", "" + now);
+    String stm = "FROM EventEntity e WHERE e NOT IN (SELECT r.eventByMatchId FROM ResultsEntity r)";
+    Query query = session.createQuery(stm);
     @SuppressWarnings("unchecked") ArrayList<EventEntity> events = (ArrayList<EventEntity>) query.list();
 
+    Transaction tx = session.beginTransaction();
     for (EventEntity e : events) {
       ResultsEntity result = new ResultsEntity();
       result.setMatchId(e.getMatchId());
       result.setResultA(ThreadLocalRandom.current().nextInt(1, 20));
       result.setResultB(ThreadLocalRandom.current().nextInt(1, 20));
       eventsForTickets.add(e);
-      session.beginTransaction();
       session.save(result);
-      session.getTransaction().commit();
     }
+    tx.commit();
 
     if (eventsForTickets.size() > 0) updateTickets(eventsForTickets);
 
@@ -99,24 +100,21 @@ public class ResultController {
     String stm = "SELECT t.ticketByTicketId FROM TicketMatchRelEntity t WHERE t.eventByMatchId IN (:events)";
     Query query = session.createQuery(stm).setParameterList("events", events);
     @SuppressWarnings("unchecked") List<TicketEntity> tickets = (List<TicketEntity>) query.list();
+    Transaction tx = session.beginTransaction();
     for (TicketEntity t : tickets) {
-      session.beginTransaction();
       if (getResultForTicket(t.getTicketId()) == 1) {
         t.setStatus("WIN");
 
         UserEntity user = t.getUserByUserId();
         for (UserDetailsEntity userDetailsEntity : user.getUserDetailssByUserId()) {
           userDetailsEntity.setBalance(userDetailsEntity.getBalance() + t.getBetAmount() * t.getOdds());
-          session.beginTransaction();
           session.merge(userDetailsEntity);
-          session.getTransaction().commit();
           MailService mailService = new MailService("ds.assignment.3.1@gmail.com", "assignment3.1");
           mailService.sendMail(userDetailsEntity.getEmail(), "Congratulations!", "Your ticket #" + t.getTicketId() + " is a winning one." + " Your new balance is " + userDetailsEntity.getBalance() + ".");
         }
       } else t.setStatus("LOSE");
-      session.beginTransaction();
       session.merge(t);
-      session.getTransaction().commit();
     }
+    tx.commit();
   }
 }

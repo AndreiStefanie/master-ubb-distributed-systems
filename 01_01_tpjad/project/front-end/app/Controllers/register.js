@@ -15,18 +15,13 @@ angular
           $scope.password,
           $scope.email,
           function (response) {
-            if (response > 0) {
-              AuthenticationService.SetCredentials(
-                $scope.username,
-                $scope.password,
-                'employee',
-                response
-              );
-              $location.path('/lunar');
-            } else {
-              alert('Username already exists');
-              $scope.dataLoading = false;
-            }
+            AuthenticationService.SetCredentials(
+              $scope.username,
+              $scope.password,
+              'client',
+              response
+            );
+            $location.path('/lunar');
           }
         );
       };
@@ -40,7 +35,7 @@ angular
 
         $http
           .post(
-            'http://localhost:8080/LunarBet/register/',
+            'http://localhost:8080/LunarBet/api/register/',
             { username: username, password: password, email: email },
             config
           )

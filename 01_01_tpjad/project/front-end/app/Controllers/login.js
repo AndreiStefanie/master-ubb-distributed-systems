@@ -36,7 +36,7 @@ angular
     }
   )
   .controller(
-    'LoginEmployeeCtrl',
+    'LoginClientCtrl',
     function ($scope, $location, AuthenticationService, $rootScope) {
       $scope.username = '';
       $scope.password = '';
@@ -52,13 +52,13 @@ angular
         AuthenticationService.Login(
           $scope.username,
           $scope.password,
-          'employee',
+          'client',
           function (response) {
             if (response.userID > 0 && response.userType === 'client') {
               AuthenticationService.SetCredentials(
                 $scope.username,
                 $scope.password,
-                'employee',
+                'client',
                 response
               );
               $location.path('/lunar');

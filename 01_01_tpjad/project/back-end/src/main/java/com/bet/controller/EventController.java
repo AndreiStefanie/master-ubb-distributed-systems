@@ -2,6 +2,7 @@ package com.bet.controller;
 
 import com.bet.dao.EventEntity;
 import org.hibernate.Query;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +20,7 @@ public class EventController {
   @Autowired
   private org.hibernate.Session session;
 
-  @RequestMapping(value = "/api/events/sport", method = RequestMethod.GET)
+  @RequestMapping(value = "/api/events", method = RequestMethod.GET)
   public List<EventEntity> getSportOffer(@RequestParam(value = "sport") String sport) {
     Timestamp now = new Timestamp(System.currentTimeMillis());
     String stm = "FROM EventEntity WHERE sport = :sport AND moment >= :moment";
@@ -32,9 +33,10 @@ public class EventController {
   public boolean generateRandomEvents() {
     String[] sports = {"football", "basket", "tennis"};
     String[][] events = {{"Steaua", "Dinamo", "Rapid", "Chelsea", "Liverpool", "Bayern", "Real Madrid", "Athletico", "U Cluj"}, {"AAA", "BBB", "CCC", "DDD", "EEE", "FFF", "GGG", "HHH", "III"}, {"t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8", "t9"}};
-    long offset = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(2);
-    long end = Timestamp.valueOf("2022-01-31 00:00:00").getTime();
+    long offset = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(30);
+    long end = Timestamp.valueOf("2022-02-28 00:00:00").getTime();
     long diff = end - offset + 1;
+    Transaction tx = session.beginTransaction();
     for (int s = 0; s < 3; s++) {
       for (int times = 0; times < 3; times++) {
         int team1 = ThreadLocalRandom.current().nextInt(0, 9);
@@ -55,11 +57,10 @@ public class EventController {
         genEvent.setTeamB(events[s][team2]);
         genEvent.setMoment(rand);
         genEvent.setTimes(0);
-        session.beginTransaction();
         session.save(genEvent);
-        session.getTransaction().commit();
       }
     }
+    tx.commit();
 
     return true;
   }

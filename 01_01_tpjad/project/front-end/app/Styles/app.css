@@ -509,3 +509,7 @@ table#accountsTable td:nth-child(2) {
   top: 4vh;
   position: relative;
 }
+
+.statistics {
+  padding: 80px 0 0 0;
+}
