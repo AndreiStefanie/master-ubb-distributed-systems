@@ -1,0 +1,50 @@
+[
+  {
+    "id": 0,
+    "parent": null,
+    "right": false,
+    "value": "A"
+  },
+  {
+    "id": 1,
+    "parent": 0,
+    "right": false,
+    "value": "B"
+  },
+  {
+    "id": 2,
+    "parent": 0,
+    "right": true,
+    "value": "C"
+  },
+  {
+    "id": 3,
+    "parent": 1,
+    "right": false,
+    "value": "D"
+  },
+  {
+    "id": 4,
+    "parent": 1,
+    "right": true,
+    "value": "E"
+  },
+  {
+    "id": 5,
+    "parent": 2,
+    "right": false,
+    "value": "F"
+  },
+  {
+    "id": 6,
+    "parent": 2,
+    "right": true,
+    "value": "G"
+  },
+  {
+    "id": 7,
+    "parent": 3,
+    "right": false,
+    "value": "H"
+  }
+]
