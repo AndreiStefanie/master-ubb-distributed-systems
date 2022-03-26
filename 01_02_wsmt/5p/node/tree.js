@@ -24,7 +24,7 @@ function postOrder(node, handler) {
     postOrder(node.right, handler);
   }
 
-  return handler(node);
+  handler(node);
 }
 
 async function main(path) {
@@ -44,7 +44,6 @@ async function main(path) {
     for (const inputNode of inputNodes) {
       if (inputNode.parent === null) {
         root = nodes[inputNode.id];
-        // Nothing to do for the root input node
         continue;
       }
 

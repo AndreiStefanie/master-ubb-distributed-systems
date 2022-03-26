@@ -53,7 +53,6 @@ class Tree
         if (inputNode.parent == null)
         {
           root = nodes[inputNode.id];
-          // Nothing to do for the root input node
           continue;
         }
 
