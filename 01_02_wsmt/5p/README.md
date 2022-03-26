@@ -13,9 +13,11 @@ There is no limit to the size of the tree.
 
 See an example in [input.json](input.json).
 
+![Example input](input.png)
+
 ### Output
 
-
+For the provided example, the expected output is `H, D, E, B, F, G, C, A`
 
 ## Implementations
 
@@ -26,3 +28,7 @@ See an example in [input.json](input.json).
 ### Go
 
 ### Node.js
+
+The Node.js program can be executed directly as CLI program granted that Node.js is installed on the system: `./tree.js ../input.json`. Alternatively, you can execute it with `node tree.json ../input.json`.
+
+The program was developed and tested with **Node v16.14.0** altought any recent version (supporting promise-based `fs`, classes, and object destructuring) should be able to run it.
