@@ -57,6 +57,11 @@ async function main(path) {
       }
     }
 
+    if (!root) {
+      console.error('No root node provided');
+      return;
+    }
+
     // Load/handle the BST - in this case simply print the node values
     postOrder(root, (node) => console.log(node.value));
   } catch (error) {
