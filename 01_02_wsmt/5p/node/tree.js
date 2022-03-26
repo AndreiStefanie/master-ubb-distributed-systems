@@ -16,13 +16,13 @@ class BSTNode {
  * @param {Function} handler
  */
 function postOrder(node, handler) {
-  if (node.left) {
-    postOrder(node.left, handler);
+  if (!node) {
+    return;
   }
 
-  if (node.right) {
-    postOrder(node.right, handler);
-  }
+  postOrder(node.left, handler);
+
+  postOrder(node.right, handler);
 
   handler(node);
 }

@@ -29,7 +29,11 @@ The program should run with .NET Core 3.0 or newer.
 
 ### Kotlin
 
+The Kotlin implementation uses Gradle (7.4.1) for building and Gson for handling JSON parsing. Build the application with `gradle clean build` and the run the program with `java -jar app/build/libs/app.jar ../input.json`.
+
 ### Go
+
+The Go implementation can be run by building the program with `go build -o tree .` and executing it with `./tree ../input.json`. The program was developed and tested with **golang 1.18** on arm64, but should work with any recent version of go and architecture.
 
 ### Node.js
 
