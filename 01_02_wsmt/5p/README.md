@@ -27,16 +27,32 @@ The C# implementation requires .Net for building it. It was developed and tested
 
 The program should run with .NET Core 3.0 or newer.
 
+It uses the system library Json for parsing JSON files.
+
 ### Kotlin
 
 The Kotlin implementation uses Gradle (7.4.1) for building and Gson for handling JSON parsing. Build the application with `gradle clean build` and the run the program with `java -jar app/build/libs/app.jar ../input.json`.
 
+It uses the 3rd party library, Gson, for parsing JSON files.
+
 ### Go
 
 The Go implementation can be run by building the program with `go build -o tree .` and executing it with `./tree ../input.json`. The program was developed and tested with **golang 1.18** on arm64, but should work with any recent version of go and architecture.
+
+It uses the standard packages `encoding/json`, `fmt`, `os`.
 
 ### Node.js
 
 The Node.js program can be executed directly as a CLI program granted that Node.js is installed on the system: `./tree.js ../input.json`. Alternatively, you can execute it with `node tree.json ../input.json`.
 
 The program was developed and tested with **Node v16.14.0** altought any recent version (supporting promise-based `fs`, classes, and object destructuring) should be able to run it.
+
+It makes of the `fs` package that comes with any Node.js installation.
+
+### PHP
+
+The PHP program can executed either directly as a CLI program with `./tree.php ../input.json` or as a PHP program with `php ./tree.php ../input.json`.
+
+The program was developed and tested with `PHP 8.1.4`, but any recent PHP installation should be able to run it.
+
+It has no dependencies.
