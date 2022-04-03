@@ -2,26 +2,23 @@ package infra
 
 import (
 	"bufio"
+	"encoding/binary"
 	"io"
 	"net"
-
-	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/message"
-	"google.golang.org/protobuf/proto"
 )
 
-func Send(address string, m *message.Message) error {
+func Send(address string, data []byte) error {
 	c, err := net.Dial("tcp", address)
 	if err != nil {
 		return err
 	}
 	defer c.Close()
 
-	d, err := proto.Marshal(m)
-	if err != nil {
-		return err
-	}
+	// Add the size of the data as the first 4 bytes
+	b := make([]byte, 4)
+	binary.LittleEndian.PutUint32(b, uint32(len(data)))
 
-	_, err = c.Write(d)
+	_, err = c.Write(append(b, data...))
 
 	return err
 }
@@ -41,10 +38,21 @@ func Listen(address string, handler Handler) error {
 			return err
 		}
 		defer c.Close()
-		data, err := io.ReadAll(bufio.NewReader(c))
+		reader := bufio.NewReader(c)
+
+		// The first 4 bytes indicate the size of the data
+		sizeBuf := make([]byte, 4)
+		_, err = io.ReadFull(reader, sizeBuf)
 		if err != nil {
 			return err
 		}
-		handler(data)
+
+		dataBuf := make([]byte, binary.LittleEndian.Uint32(sizeBuf))
+		_, err = io.ReadFull(reader, dataBuf)
+		if err != nil {
+			return err
+		}
+
+		handler(dataBuf)
 	}
 }
