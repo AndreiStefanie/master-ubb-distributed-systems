@@ -21,3 +21,11 @@ vendor/
 go.work
 
 *.log
+
+.DS_Store
+
+amcds
+
+__debug_bin
+
+messages/

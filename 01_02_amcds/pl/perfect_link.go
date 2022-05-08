@@ -1,7 +1,9 @@
 package pl
 
 import (
-	"log"
+	"errors"
+	"net"
+	"strconv"
 
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/infra"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pb"
@@ -9,30 +11,76 @@ import (
 )
 
 type PerfectLink struct {
-	Host string
-	Port int32
+	host       string
+	port       int32
+	hubAddress string
+	msgQueue   chan *pb.Message
+	systemId   string
+	parentId   string
+	processes  []*pb.ProcessId
 }
 
-func Create(host string, port int32) *PerfectLink {
+func Create(host string, port int32, hubAddress string) *PerfectLink {
 	return &PerfectLink{
-		Host: host,
-		Port: port,
+		host:       host,
+		port:       port,
+		hubAddress: hubAddress,
 	}
 }
 
-func (pl *PerfectLink) Handle(m *pb.Message, events chan *pb.Message) error {
-	log.Println("[pl] handling message")
+func (pl *PerfectLink) WithProps(systemId string, msgQueue chan *pb.Message, ps []*pb.ProcessId) *PerfectLink {
+	pl.systemId = systemId
+	pl.msgQueue = msgQueue
+	pl.processes = ps
+
+	return pl
+}
+
+func (pl PerfectLink) CopyWithParentId(parentAbstraction string) *PerfectLink {
+	newPl := pl
+	newPl.parentId = parentAbstraction
+
+	return &newPl
+}
+
+func (pl *PerfectLink) Handle(m *pb.Message) error {
+	switch m.Type {
+	case pb.Message_NETWORK_MESSAGE:
+		var sender *pb.ProcessId
+		for _, p := range pl.processes {
+			if p.Host == m.NetworkMessage.SenderHost && p.Port == m.NetworkMessage.SenderListeningPort {
+				sender = p
+			}
+		}
+		msg := &pb.Message{
+			SystemId:          m.SystemId,
+			FromAbstractionId: m.ToAbstractionId,
+			ToAbstractionId:   pl.parentId,
+			Type:              pb.Message_PL_DELIVER,
+			PlDeliver: &pb.PlDeliver{
+				Sender:  sender,
+				Message: m.NetworkMessage.Message,
+			},
+		}
+		pl.msgQueue <- msg
+	case pb.Message_PL_SEND:
+		return pl.Send(m)
+	default:
+		return errors.New("Message not supported")
+	}
+
 	return nil
 }
 
-func (pl *PerfectLink) Send(address string, m *pb.Message) error {
+func (pl *PerfectLink) Send(m *pb.Message) error {
 	mToSend := &pb.Message{
-		SystemId:        m.SystemId,
+		SystemId:        pl.systemId,
 		ToAbstractionId: m.ToAbstractionId,
 		Type:            pb.Message_NETWORK_MESSAGE,
 		NetworkMessage: &pb.NetworkMessage{
-			SenderListeningPort: pl.Port,
 			Message:             m.PlSend.Message,
+			SenderHost:          pl.host,
+			SenderListeningPort: pl.port,
 		},
 	}
 
@@ -41,17 +89,20 @@ func (pl *PerfectLink) Send(address string, m *pb.Message) error {
 		return err
 	}
 
+	address := pl.hubAddress
+	if m.PlSend.Destination != nil {
+		address = net.JoinHostPort(m.PlSend.Destination.Host, strconv.Itoa(int(m.PlSend.Destination.Port)))
+	}
+
 	return infra.Send(address, data)
 }
 
-func (pl *PerfectLink) Receive(data []byte, events chan *pb.Message) error {
+func (pl *PerfectLink) Parse(data []byte) (*pb.Message, error) {
 	m := &pb.Message{}
 	err := proto.Unmarshal(data, m)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	events <- m
-
-	return nil
+	return m, nil
 }

@@ -1,17 +1,13 @@
 package consensus
 
 import (
-	"log"
-
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pb"
-	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pl"
+	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/util/log"
 )
 
-type EventuallyPerfectFailureDetector struct {
-	pl *pl.PerfectLink
-}
+type EventuallyPerfectFailureDetector struct{}
 
-func (epfd *EventuallyPerfectFailureDetector) Handle(m *pb.Message, events chan *pb.Message) error {
-	log.Println("[epfd] handling message")
+func (epfd *EventuallyPerfectFailureDetector) Handle(m *pb.Message) error {
+	log.Debug("[epfd] handling message")
 	return nil
 }

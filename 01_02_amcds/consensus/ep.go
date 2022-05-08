@@ -1,17 +1,13 @@
 package consensus
 
 import (
-	"log"
-
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pb"
-	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pl"
+	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/util/log"
 )
 
-type EpochConsensus struct {
-	pl *pl.PerfectLink
-}
+type EpochConsensus struct{}
 
-func (ep *EpochConsensus) Handle(m *pb.Message, events chan *pb.Message) error {
-	log.Println("[ep] handling message")
+func (ep *EpochConsensus) Handle(m *pb.Message) error {
+	log.Debug("[ep] handling message")
 	return nil
 }
