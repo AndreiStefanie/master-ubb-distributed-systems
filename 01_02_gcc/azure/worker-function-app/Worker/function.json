@@ -1,0 +1,12 @@
+{
+  "bindings": [
+    {
+      "name": "imageBlob",
+      "type": "blobTrigger",
+      "direction": "in",
+      "path": "images/{name}",
+      "connection": "stfincorpprod_STORAGE"
+    }
+  ],
+  "scriptFile": "../dist/Worker/index.js"
+}
