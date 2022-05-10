@@ -25,7 +25,7 @@ const blobTrigger: AzureFunction = async function (
 
   const image = await Jimp.read(imageBlob);
   image.resize(ICON_SIZE, ICON_SIZE);
-  const buffer = await image.getBufferAsync(Jimp.MIME_PNG);
+  const buffer = await image.getBufferAsync(Jimp.MIME_JPEG);
 
   const blobClient = new BlockBlobClient(
     process.env.stfincorpprod_STORAGE,
@@ -34,7 +34,9 @@ const blobTrigger: AzureFunction = async function (
   );
 
   try {
-    await blobClient.uploadData(buffer);
+    await blobClient.uploadData(buffer, {
+      blobHTTPHeaders: { blobContentType: 'image/jpeg' },
+    });
   } catch (err) {
     context.log(err.message);
   }
