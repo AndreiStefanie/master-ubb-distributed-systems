@@ -1,4 +1,4 @@
-version: "3"
+version: '3'
 
 services:
   namenode:
@@ -24,7 +24,7 @@ services:
     volumes:
       - hadoop_datanode:/hadoop-data/dfs
     environment:
-      SERVICE_PRECONDITION: "namenode:9870 namenode:9000 resourcemanager:8088"
+      SERVICE_PRECONDITION: 'namenode:9870 namenode:9000 resourcemanager:8088'
     env_file:
       - ./hadoop.env
 
@@ -34,18 +34,9 @@ services:
     container_name: resourcemanager
     restart: always
     environment:
-      SERVICE_PRECONDITION: "namenode:9000 namenode:9870"
+      SERVICE_PRECONDITION: 'namenode:9000 namenode:9870'
     env_file:
       - ./hadoop.env
-
-  #  nodemanager:
-  #    image: bde2020/hadoop-nodemanager:2.0.0-hadoop3.2.1-java8
-  #   container_name: nodemanager
-  #    restart: always
-  #    environment:
-  #      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 datanode:9864 resourcemanager:8088"
-  #    env_file:
-  #      - ./hadoop.env
 
   historyserver:
     build: ./historyserver
@@ -53,7 +44,7 @@ services:
     container_name: historyserver
     restart: always
     environment:
-      SERVICE_PRECONDITION: "namenode:9000 namenode:9870 node:9864 resourcemanager:8088"
+      SERVICE_PRECONDITION: 'namenode:9000 namenode:9870 node:9864 resourcemanager:8088'
     volumes:
       - hadoop_historyserver:/hadoop/yarn/timeline
     env_file:

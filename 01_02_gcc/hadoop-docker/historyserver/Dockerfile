@@ -1,6 +1,6 @@
 FROM asergiu/ubb:hadoop-base
 
-MAINTAINER Adrian DARABANT <dadi@cs.ubbcluj.ro>
+LABEL org.opencontainers.image.authors="dadi@cs.ubbcluj.ro"
 
 HEALTHCHECK CMD curl -f http://localhost:8188/ || exit 1
 
