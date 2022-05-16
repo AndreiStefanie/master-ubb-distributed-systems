@@ -1,0 +1,36 @@
+extends layout
+
+block content
+  .main.container
+    .row
+      .col-md-12.text-center.mb-5
+        h1= title
+        p Welcome to #{title}
+      .col-md-4
+        h4 New Review
+
+        form.card.p-3(method='POST' action='/review' enctype='multipart/form-data')
+          div.form-group
+            label(for='name') Name:
+            input#name.form-control(type='text' placeholder='James Doe' name='name')
+          div.form-group
+            label(for='comment') Comment:
+            textarea#comment.form-control(rows='3' placeholder='Your comment goes here...' name='comment')
+          div.form-group
+            label(for='image') Photo:
+            input#photo.form-control(type='file' accept='image/*' placeholder='Choose an image' name='image')
+
+          button.btn.btn-primary(type='submit') Publish
+      .col-md-8
+        h4 Latest reviews
+        .row
+          each item in reviews
+            .col-md-4
+              .card.mb-3
+                a.card-img-top(href="/photo?url="+item.photoUrl)
+                  img(src=item.thumbnailUrl style="max-width: 100%;" onerror="this.onerror=null;this.src='" + item.photoUrl +"';")
+                .card-body
+                  h5.card-title= item.author
+                  p.card-text= item.comment
+     
+        
