@@ -16,6 +16,8 @@ namespace QuickStart
       public DateTime Date { get; set; } = DateTime.Now;
       [Option()]
       public int Id { get; set; } = 0;
+      [Option()]
+      public string Query { get; set; } = "";
     }
 
     [Verb("books", HelpText = "Manage books")]
@@ -29,6 +31,8 @@ namespace QuickStart
       public DateTime Date { get; set; } = DateTime.Now;
       [Option()]
       public int Id { get; set; } = 0;
+      [Option()]
+      public string Query { get; set; } = "";
     }
 
     static void Main(string[] args)
@@ -42,7 +46,7 @@ namespace QuickStart
                switch (o.Operation)
                {
                  case "get":
-                   result = proxy.call("get_authors");
+                   result = proxy.call("get_authors", o.Query);
                    foreach (dynamic author in result)
                    {
                      Console.WriteLine(String.Format("{0}, {1}, {2}", author["id"], author["name"], author["birthday"]));
@@ -68,7 +72,7 @@ namespace QuickStart
                switch (o.Operation)
                {
                  case "get":
-                   result = proxy.call("get_books");
+                   result = proxy.call("get_books", o.Query);
                    foreach (dynamic book in result)
                    {
                      Console.WriteLine(String.Format("{0}, {1} published in {2} by {3}", book["id"], book["title"], book["published_at"], book["author"]["name"]));
