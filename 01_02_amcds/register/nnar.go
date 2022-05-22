@@ -257,3 +257,5 @@ func compare(v1, v2 *pb.NnarInternalValue) int {
 
 	return 0
 }
+
+func (nnar *NnAtomicRegister) Destroy() {}

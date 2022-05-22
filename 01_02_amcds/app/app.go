@@ -61,6 +61,15 @@ func (app *App) Handle(m *pb.Message) error {
 				ToAbstractionId:   "app.nnar[" + m.PlDeliver.Message.AppRead.Register + "]",
 				NnarRead:          &pb.NnarRead{},
 			}
+		case pb.Message_APP_PROPOSE:
+			msgToSend = &pb.Message{
+				Type:              pb.Message_UC_PROPOSE,
+				FromAbstractionId: "app",
+				ToAbstractionId:   "app.uc[" + m.PlDeliver.Message.AppPropose.Topic + "]",
+				UcPropose: &pb.UcPropose{
+					Value: m.PlDeliver.Message.AppPropose.Value,
+				},
+			}
 		default:
 			return errors.New("Message not supported")
 		}
@@ -105,6 +114,21 @@ func (app *App) Handle(m *pb.Message) error {
 				},
 			},
 		}
+	case pb.Message_UC_DECIDE:
+		msgToSend = &pb.Message{
+			Type:              pb.Message_PL_SEND,
+			FromAbstractionId: "app",
+			ToAbstractionId:   "app.pl",
+			PlSend: &pb.PlSend{
+				Message: &pb.Message{
+					Type:            pb.Message_APP_DECIDE,
+					ToAbstractionId: "app",
+					AppDecide: &pb.AppDecide{
+						Value: m.UcDecide.Value,
+					},
+				},
+			},
+		}
 	default:
 		return errors.New("Message not supported")
 	}
@@ -115,3 +139,5 @@ func (app *App) Handle(m *pb.Message) error {
 
 	return nil
 }
+
+func (app *App) Destroy() {}

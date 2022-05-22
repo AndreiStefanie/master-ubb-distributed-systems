@@ -5,24 +5,19 @@ import (
 
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/app"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/broadcast"
+	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/consensus"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pb"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pl"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/register"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/util"
+	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/util/abstraction"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/util/log"
 )
-
-type Abstraction interface {
-	Handle(m *pb.Message) error
-}
-
-type abstractionId = string
-type abstractionRegistry = map[abstractionId]Abstraction
 
 type System struct {
 	systemId     string
 	msgQueue     chan *pb.Message
-	abstractions abstractionRegistry
+	abstractions abstraction.Registry
 	hubAddress   string
 	ownProcess   *pb.ProcessId
 	processes    []*pb.ProcessId
@@ -39,8 +34,11 @@ func (s *System) run() {
 
 		if !ok {
 			log.Info("Registering abstractions for %v", m.ToAbstractionId)
-			if strings.Contains(m.ToAbstractionId, "nnar") {
+			if strings.HasPrefix(m.ToAbstractionId, "app.nnar") {
 				s.registerNnarAbstractions(util.GetRegisterId((m.ToAbstractionId)))
+			}
+			if m.Type == pb.Message_UC_PROPOSE {
+				s.registerConsensusAbstractions(util.GetRegisterId((m.ToAbstractionId)))
 			}
 		}
 
@@ -71,6 +69,9 @@ func (s *System) RegisterAbstractions() {
 
 func (s *System) Destroy() {
 	log.Debug("Destroying system %v", s.systemId)
+	for _, a := range s.abstractions {
+		a.Destroy()
+	}
 	close(s.msgQueue)
 }
 
@@ -93,7 +94,7 @@ func CreateSystem(m *pb.Message, host, owner, hubAddress string, port, index int
 		msgQueue:     make(chan *pb.Message, 4096),
 		ownProcess:   ownProcess,
 		hubAddress:   hubAddress,
-		abstractions: make(map[string]Abstraction),
+		abstractions: make(map[string]abstraction.Abstraction),
 		processes:    m.ProcInitializeSystem.Processes,
 	}
 }
@@ -114,4 +115,18 @@ func (s *System) registerNnarAbstractions(key string) {
 	s.abstractions[aId+".pl"] = pl.CopyWithParentId(aId)
 	s.abstractions[aId+".beb"] = broadcast.Create(s.msgQueue, s.processes, aId+".beb")
 	s.abstractions[aId+".beb.pl"] = pl.CopyWithParentId(aId + ".beb")
+}
+
+func (s *System) registerConsensusAbstractions(topic string) {
+	pl := pl.Create(s.ownProcess.Host, s.ownProcess.Port, s.hubAddress).WithProps(s.systemId, s.msgQueue, s.processes)
+	aId := "app.uc[" + topic + "]"
+
+	s.abstractions[aId] = consensus.CreateUc(aId, s.msgQueue, s.abstractions, s.processes, s.ownProcess, pl)
+	s.abstractions[aId+".ec"] = consensus.CreateEc(aId, aId+".ec", s.ownProcess, s.msgQueue, s.processes)
+	s.abstractions[aId+".ec.pl"] = pl.CopyWithParentId(aId + ".ec")
+	s.abstractions[aId+".ec.beb"] = broadcast.Create(s.msgQueue, s.processes, aId+".ec.beb")
+	s.abstractions[aId+".ec.beb.pl"] = pl.CopyWithParentId(aId + ".ec.beb")
+	s.abstractions[aId+".ec.eld"] = consensus.CreateEld(aId+".ec", aId+".ec.eld", s.msgQueue, s.processes)
+	s.abstractions[aId+".ec.eld.epfd"] = consensus.CreateEpfd(aId+".ec.eld", aId+".ec.eld.epfd", s.msgQueue, s.processes)
+	s.abstractions[aId+".ec.eld.epfd.pl"] = pl.CopyWithParentId(aId + ".ec.eld.epfd")
 }

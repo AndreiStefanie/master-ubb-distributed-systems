@@ -3,10 +3,10 @@ package pl
 import (
 	"errors"
 	"net"
-	"strconv"
 
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/infra"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pb"
+	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/util"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -91,7 +91,7 @@ func (pl *PerfectLink) Send(m *pb.Message) error {
 
 	address := pl.hubAddress
 	if m.PlSend.Destination != nil {
-		address = net.JoinHostPort(m.PlSend.Destination.Host, strconv.Itoa(int(m.PlSend.Destination.Port)))
+		address = net.JoinHostPort(m.PlSend.Destination.Host, util.Int32ToString(m.PlSend.Destination.Port))
 	}
 
 	return infra.Send(address, data)
@@ -106,3 +106,5 @@ func (pl *PerfectLink) Parse(data []byte) (*pb.Message, error) {
 
 	return m, nil
 }
+
+func (pl *PerfectLink) Destroy() {}

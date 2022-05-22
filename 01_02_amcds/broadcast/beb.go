@@ -52,3 +52,5 @@ func (beb *BestEffortBroadcast) Handle(m *pb.Message) error {
 
 	return nil
 }
+
+func (beb *BestEffortBroadcast) Destroy() {}
