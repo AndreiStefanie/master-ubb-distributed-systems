@@ -16,7 +16,7 @@ func Instantiate() error {
 	}
 	zLogger, err := zap.Config{
 		Encoding:          format,
-		Level:             zap.NewAtomicLevelAt(zapcore.DebugLevel),
+		Level:             zap.NewAtomicLevelAt(zapcore.InfoLevel),
 		DisableCaller:     false,
 		DisableStacktrace: false,
 		OutputPaths:       []string{"stdout"},

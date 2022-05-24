@@ -32,7 +32,7 @@ func Listen(address string, handler Handler) (net.Listener, error) {
 	if err != nil {
 		return nil, err
 	}
-	go func() {
+	go func(handler Handler) {
 		for {
 			// Handle the connection in a function so the closing can be defered
 			func() {
@@ -62,7 +62,7 @@ func Listen(address string, handler Handler) (net.Listener, error) {
 				handler(dataBuf)
 			}()
 		}
-	}()
+	}(handler)
 
 	return l, nil
 }

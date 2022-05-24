@@ -6,6 +6,7 @@ import (
 
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/pb"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/util"
+	"github.com/AndreiStefanie/master-ubb-distributed-systems/amcds/util/log"
 )
 
 const delta = 100 * time.Millisecond
@@ -39,13 +40,13 @@ func CreateEpfd(parentAbstraction, abstractionId string, mQ chan *pb.Message, pr
 		d.alive[util.GetProcessKey(p)] = p
 	}
 
-	d.startTimer(delta)
+	d.startTimer(d.delay)
 
 	return d
 }
 
-func (d *EventuallyPerfectFailureDetector) startTimer(delta time.Duration) {
-	d.timer = time.NewTimer(delta)
+func (d *EventuallyPerfectFailureDetector) startTimer(delay time.Duration) {
+	d.timer = time.NewTimer(delay)
 
 	go timerCallback(d)
 }
@@ -99,6 +100,7 @@ func (d *EventuallyPerfectFailureDetector) handleTimeout() {
 	for k := range d.suspected {
 		if _, ok := d.alive[k]; ok {
 			d.delay = d.delay + delta
+			log.Info("Increased timeout to %v", d.delay)
 			break
 		}
 	}
@@ -124,7 +126,7 @@ func (d *EventuallyPerfectFailureDetector) handleTimeout() {
 			d.msgQueue <- &pb.Message{
 				Type:              pb.Message_EPFD_RESTORE,
 				FromAbstractionId: d.id,
-				ToAbstractionId:   d.id,
+				ToAbstractionId:   d.parentId,
 				EpfdRestore: &pb.EpfdRestore{
 					Process: p,
 				},
@@ -137,6 +139,7 @@ func (d *EventuallyPerfectFailureDetector) handleTimeout() {
 			FromAbstractionId: d.id,
 			ToAbstractionId:   d.id + ".pl",
 			PlSend: &pb.PlSend{
+				Destination: p,
 				Message: &pb.Message{
 					Type:                         pb.Message_EPFD_INTERNAL_HEARTBEAT_REQUEST,
 					FromAbstractionId:            d.id,
@@ -148,7 +151,7 @@ func (d *EventuallyPerfectFailureDetector) handleTimeout() {
 	}
 
 	d.alive = make(util.ProcessMap)
-	d.startTimer(delta)
+	d.startTimer(d.delay)
 }
 
 func (d *EventuallyPerfectFailureDetector) Destroy() {

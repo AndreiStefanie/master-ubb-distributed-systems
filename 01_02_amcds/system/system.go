@@ -33,11 +33,12 @@ func (s *System) run() {
 		handler, ok := s.abstractions[m.ToAbstractionId]
 
 		if !ok {
-			log.Info("Registering abstractions for %v", m.ToAbstractionId)
 			if strings.HasPrefix(m.ToAbstractionId, "app.nnar") {
+				log.Info("Registering abstractions for %v", m.ToAbstractionId)
 				s.registerNnarAbstractions(util.GetRegisterId((m.ToAbstractionId)))
 			}
 			if m.Type == pb.Message_UC_PROPOSE {
+				log.Info("Registering abstractions for %v", m.ToAbstractionId)
 				s.registerConsensusAbstractions(util.GetRegisterId((m.ToAbstractionId)))
 			}
 		}
