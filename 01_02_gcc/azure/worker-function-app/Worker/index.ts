@@ -1,5 +1,6 @@
 import { AzureFunction, Context } from '@azure/functions';
 import { BlockBlobClient } from '@azure/storage-blob';
+import { QueueClient } from '@azure/storage-queue';
 import Jimp = require('jimp');
 
 const ICON_SIZE = 128;
@@ -37,8 +38,27 @@ const blobTrigger: AzureFunction = async function (
     await blobClient.uploadData(buffer, {
       blobHTTPHeaders: { blobContentType: 'image/jpeg' },
     });
+    const queueClient = new QueueClient(
+      process.env.stfincorpprod_STORAGE,
+      'events'
+    );
+    await queueClient.sendMessage(
+      JSON.stringify({
+        specversion: '1.0',
+        type: 'thumbnail-created',
+        source: `/${blobName}`,
+        id: context.invocationId,
+        time: new Date(),
+        datacontenttype: 'application/json',
+        data: {
+          id: context.bindingData.metadata['id'],
+          thumbnailUrl: blobClient.url,
+        },
+      })
+    );
   } catch (err) {
-    context.log(err.message);
+    context.log.error(err.message);
+    return;
   }
 };
 
