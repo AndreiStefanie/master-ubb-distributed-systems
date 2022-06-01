@@ -1,0 +1,5 @@
+{
+  "appService.zipIgnorePattern": [".vscode{,/**}"],
+  "appService.defaultWebAppToDeploy": "/subscriptions/0d961ccf-9ee6-49b2-9d89-162f8d083a51/microsoft.web/sites/subscriptions/0d961ccf-9ee6-49b2-9d89-162f8d083a51/resourceGroups/rg-fincorp/providers/Microsoft.Web/sites/as-fincorp-guestbook-prod",
+  "appService.deploySubpath": "."
+}
