@@ -1,16 +1,16 @@
-<script setup lang="ts">
-import { RouterView } from 'vue-router';
-</script>
-
 <template>
-  <RouterView />
+  <v-app class="overflow-visible">
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
 <style>
 @import '@/assets/base.css';
 
 #app {
-  max-width: 1280px;
+  max-width: 70vw;
   margin: 0 auto;
   padding: 2rem;
 
@@ -72,9 +72,8 @@ nav a:first-of-type {
   }
 
   #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
     padding: 0 2rem;
+    min-width: 50vw;
   }
 
   header {

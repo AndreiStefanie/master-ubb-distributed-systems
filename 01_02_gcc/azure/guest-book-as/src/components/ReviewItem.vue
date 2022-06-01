@@ -4,10 +4,10 @@ import { directive as fullscreen } from 'vue-fullscreen';
 
 interface Props {
   author: string;
-  content: string;
+  comment: string;
   thumbnailUrl: string;
   imageUrl: string;
-  date: Date;
+  timestamp: Date;
 }
 
 const props = defineProps<Props>();
@@ -28,14 +28,29 @@ const state = reactive({ isFullscreen: false });
     <img class="fullImage" :src="props.imageUrl" />
   </div>
   <div class="item">
+    <v-progress-circular
+      v-if="!props.thumbnailUrl"
+      class="thumbnail"
+      indeterminate
+      color="primary"
+      v-fullscreen.teleport="fullscreenOptions"
+    />
     <img
+      v-else
       class="thumbnail"
       :src="props.thumbnailUrl"
       v-fullscreen.teleport="fullscreenOptions"
     />
     <div class="details">
-      <h3>{{ props.author }}</h3>
-      <p>{{ props.content }}</p>
+      <v-row>
+        <h3>{{ props.author }}</h3>
+        <v-chip class="ml-4 text-caption" size="small">{{
+          props.timestamp
+        }}</v-chip>
+      </v-row>
+      <v-row>
+        <p>{{ props.comment }}</p>
+      </v-row>
     </div>
   </div>
 </template>
@@ -48,7 +63,7 @@ const state = reactive({ isFullscreen: false });
 
 .details {
   flex: 1;
-  margin-left: 1rem;
+  margin: 1rem;
 }
 
 .thumbnail {
@@ -119,7 +134,8 @@ h3 {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  z-index: 100;
+  top: 0;
+  z-index: 10000;
   position: absolute;
 }
 </style>
