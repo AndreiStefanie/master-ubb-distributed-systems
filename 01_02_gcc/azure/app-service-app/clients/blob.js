@@ -1,4 +1,4 @@
-import { BlockBlobClient } from '@azure/storage-blob';
+const { BlockBlobClient } = require('@azure/storage-blob');
 
 const getBlobClient = (blobName) =>
   new BlockBlobClient(
