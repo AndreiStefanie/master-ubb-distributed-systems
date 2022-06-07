@@ -228,7 +228,7 @@ spec:
                 configMapKeyRef:
                   key: YARN_CONF_yarn_timeline___service_hostname
                   name: hadoop-env
-          image: bde2020/hadoop-namenode:2.0.0-hadoop3.3.1-java11
+          image: hadoop-namenode
           name: namenode
           ports:
             - containerPort: 9870
