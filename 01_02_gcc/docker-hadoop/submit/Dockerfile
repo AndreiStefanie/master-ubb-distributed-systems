@@ -1,0 +1,15 @@
+ARG HADOOP_BASE_VERSION=2.0.0-hadoop3.3.1-java11
+FROM bde2020/hadoop-base:$HADOOP_BASE_VERSION
+
+MAINTAINER Ivan Ermilov <ivan.s.ermilov@gmail.com>
+
+COPY WordCount.jar /opt/hadoop/applications/WordCount.jar
+
+ENV JAR_FILEPATH="/opt/hadoop/applications/WordCount.jar"
+ENV CLASS_TO_RUN="WordCount"
+ENV PARAMS="/input /output"
+
+ADD run.sh /run.sh
+RUN chmod a+x /run.sh
+
+CMD ["/run.sh"]
