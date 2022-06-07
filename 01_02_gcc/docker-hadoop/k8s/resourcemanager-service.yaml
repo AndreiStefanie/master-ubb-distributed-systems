@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml
+    kompose.version: 1.26.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: resourcemanager
+  name: resourcemanager
+spec:
+  ports:
+    - name: "8088"
+      port: 8088
+      targetPort: 8088
+  selector:
+    io.kompose.service: resourcemanager
+status:
+  loadBalancer: {}
