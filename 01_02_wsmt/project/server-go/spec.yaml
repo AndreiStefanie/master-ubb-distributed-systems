@@ -1,0 +1,343 @@
+swagger: '2.0'
+info:
+  description: >-
+    This RESTful API implements a library management system. It enables you to perform CRUD operations on authors and books.
+  version: 1.0.0
+  title: Library Management System (WSMT Project))
+  contact:
+    email: andrei.stefanie@stud.ubbcluj.ro
+host: localhost:8080
+basePath: /v1
+tags:
+  - name: authors
+    description: The authors resource
+  - name: books
+    description: The books resource
+schemes:
+  - http
+paths:
+  /authors:
+    get:
+      tags:
+        - authors
+      summary: Get the authors
+      operationId: getAuthors
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: query
+          in: query
+          description: Substring from the author name
+          type: string
+      responses:
+        '200':
+          description: Found authors
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Author'
+    post:
+      tags:
+        - authors
+      summary: Add a new author to the library
+      operationId: addAuthor
+      consumes:
+        - application/json
+        - application/xml
+        - application/yaml
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - in: body
+          name: body
+          description: The information of the new author
+          required: true
+          schema:
+            $ref: '#/definitions/Author'
+      responses:
+        '400':
+          description: Invalid author data
+  /authors/{id}:
+    get:
+      tags:
+        - authors
+      summary: Find author by ID
+      description: Returns a single author
+      operationId: getAuthor
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: id
+          in: path
+          description: ID of author to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Found the author
+          schema:
+            $ref: '#/definitions/Author'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Author not found
+    put:
+      tags:
+        - authors
+      summary: Update an existing author
+      operationId: updateAuthor
+      consumes:
+        - application/json
+        - application/xml
+        - application/yaml
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: id
+          in: path
+          description: ID of author to update
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          description: Author object that needs to be added to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Author'
+      responses:
+        '204':
+          description: Resource updated
+        '400':
+          description: Invalid author data
+    delete:
+      tags:
+        - authors
+      summary: Deletes an author and his/her books
+      operationId: deleteAuthor
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the author to be deleted
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: Resource deleted
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Author not found
+  /authors/{id}/books:
+    get:
+      tags:
+        - authors
+      summary: Get the books of the given author
+      operationId: getAuthorBooks
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: id
+          in: path
+          description: Author ID
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Book'
+  /books:
+    get:
+      tags:
+        - books
+      summary: Get the books
+      operationId: getBooks
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: query
+          in: query
+          description: Substring from the book title
+          type: string
+      responses:
+        '200':
+          description: Found books
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Book'
+    post:
+      tags:
+        - books
+      summary: Add a new book to the library
+      operationId: addBook
+      consumes:
+        - application/json
+        - application/xml
+        - application/yaml
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - in: body
+          name: body
+          description: The information of the new book
+          required: true
+          schema:
+            $ref: '#/definitions/Book'
+      responses:
+        '400':
+          description: Invalid book data
+  /books/{id}:
+    get:
+      tags:
+        - books
+      summary: Find book by ID
+      description: Returns a single book
+      operationId: getBook
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: id
+          in: path
+          description: ID of book to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: Found the book
+          schema:
+            $ref: '#/definitions/Book'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Book not found
+    put:
+      tags:
+        - books
+      summary: Update an existing book
+      operationId: updateBook
+      consumes:
+        - application/json
+        - application/xml
+        - application/yaml
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: id
+          in: path
+          description: ID of book to update
+          required: true
+          type: integer
+          format: int64
+        - in: body
+          name: body
+          description: Book object that needs to be added to the store
+          required: true
+          schema:
+            $ref: '#/definitions/Book'
+      responses:
+        '204':
+          description: Resource updated
+        '400':
+          description: Invalid book data
+    delete:
+      tags:
+        - books
+      summary: Deletes a book
+      operationId: deleteBook
+      produces:
+        - application/json
+        - application/xml
+        - application/yaml
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the book to be deleted
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '204':
+          description: Resource deleted
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Book not found
+definitions:
+  Author:
+    type: object
+    required:
+      - name
+    properties:
+      ID:
+        type: integer
+        format: int64
+      CreatedAt:
+        type: string
+        format: date-time
+      UpdatedAt:
+        type: string
+        format: date-time
+      DeletedAt:
+        type: string
+        format: date-time
+      name:
+        type: string
+        description: The complete name of the author
+  Book:
+    type: object
+    required:
+      - title
+      - publicationYear
+      - authorId
+    properties:
+      ID:
+        type: integer
+        format: int64
+      CreatedAt:
+        type: string
+        format: date-time
+      UpdatedAt:
+        type: string
+        format: date-time
+      DeletedAt:
+        type: string
+        format: date-time
+      title:
+        type: string
+        description: The book title
+      publicationYear:
+        type: integer
+      authorId:
+        type: integer
+      author:
+        $ref: '#/definitions/Author'
