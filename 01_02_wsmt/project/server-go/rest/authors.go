@@ -28,6 +28,11 @@ func (api *Api) getAuthors(c *gin.Context) {
 func (api *Api) getAuthor(c *gin.Context) {
 	author, result := api.getAuthorById(c.Param("id"))
 
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		return
+	}
+
 	setResponse(&author, result, c)
 }
 
@@ -49,7 +54,12 @@ func (api *Api) createAuthor(c *gin.Context) {
 
 // updateAuthor updates an author identified by the id with the data from the body
 func (api *Api) updateAuthor(c *gin.Context) {
-	author, _ := api.getAuthorById(c.Param("id"))
+	author, r := api.getAuthorById(c.Param("id"))
+
+	if r.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		return
+	}
 
 	if err := c.Bind(&author); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -63,7 +73,12 @@ func (api *Api) updateAuthor(c *gin.Context) {
 
 // deleteAuthor deletes an author identified by the id including his/her books
 func (api *Api) deleteAuthor(c *gin.Context) {
-	author, _ := api.getAuthorById(c.Param("id"))
+	author, r := api.getAuthorById(c.Param("id"))
+
+	if r.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		return
+	}
 
 	result := api.Db.Select("Books").Delete(&author)
 

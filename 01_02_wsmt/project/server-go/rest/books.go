@@ -29,6 +29,11 @@ func (api *Api) getBook(c *gin.Context) {
 	var book models.Book
 	result := api.Db.Preload("Author").Find(&book, c.Param("id"))
 
+	if result.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		return
+	}
+
 	setResponse(&book, result, c)
 }
 
@@ -58,7 +63,12 @@ func (api *Api) createBook(c *gin.Context) {
 // updateBook updates a book identified by the id with the data from the body
 func (api *Api) updateBook(c *gin.Context) {
 	book := models.Book{}
-	api.Db.Find(&book, c.Param("id"))
+	r := api.Db.Find(&book, c.Param("id"))
+
+	if r.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		return
+	}
 
 	if err := c.Bind(&book); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -73,7 +83,12 @@ func (api *Api) updateBook(c *gin.Context) {
 // deleteBook deletes a book identified by the id
 func (api *Api) deleteBook(c *gin.Context) {
 	book := models.Book{}
-	api.Db.Find(&book, c.Param("id"))
+	r := api.Db.Find(&book, c.Param("id"))
+
+	if r.RowsAffected == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		return
+	}
 
 	result := api.Db.Select("Book").Delete(&book)
 
