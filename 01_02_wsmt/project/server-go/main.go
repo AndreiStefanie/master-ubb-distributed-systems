@@ -4,9 +4,9 @@ import (
 	"os"
 	"time"
 
-	"github.com/AndreiStefanie/master-ubb-distributed-systems/wsmt/project/api"
+	log "github.com/AndreiStefanie/master-ubb-distributed-systems/wsmt/project/log"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/wsmt/project/models"
-	log "github.com/AndreiStefanie/master-ubb-distributed-systems/wsmt/project/util"
+	"github.com/AndreiStefanie/master-ubb-distributed-systems/wsmt/project/rest"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/hellofresh/health-go/v4"
@@ -29,16 +29,18 @@ func main() {
 
 	log.Instantiate()
 
+	// Connect to the database
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to DB: %v", err)
 	}
-
 	db.AutoMigrate(&models.Author{}, &models.Book{})
 
+	// Create the router
 	r := gin.Default()
 	r.Use(gin.Recovery())
 
+	// Configure CORS
 	corsConfig := cors.DefaultConfig()
 	corsConfig.AllowAllOrigins = true
 	corsConfig.AllowHeaders = []string{"Authorization", "Origin", "Content-Type"}
@@ -46,6 +48,7 @@ func main() {
 	corsConfig.AddExposeHeaders("X-Total-Count", "X-Filename")
 	r.Use(cors.New(corsConfig))
 
+	// Configure the health check
 	h, err := health.New()
 	if err != nil {
 		log.Fatal("Failed to create health checks: %v", err)
@@ -58,8 +61,10 @@ func main() {
 	})
 	r.GET("/status", gin.WrapF(h.HandlerFunc))
 
-	api.CreateApi(db, r)
+	// Add the resource routes
+	rest.CreateApi(db, r)
 
+	// Start the server
 	err = r.Run(":" + port)
 	if err != nil {
 		log.Fatal("Failed to start the server: %v", err)
