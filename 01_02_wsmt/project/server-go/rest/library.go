@@ -48,6 +48,11 @@ func addRoutes(router *gin.Engine, api *Api) {
 func setResponse(resources interface{}, result *gorm.DB, c *gin.Context) {
 	c.Header("X-Total-Count", strconv.Itoa(int(result.RowsAffected)))
 
+	if result.Error != nil {
+		c.String(http.StatusInternalServerError, result.Error.Error())
+		return
+	}
+
 	var status int
 
 	switch c.Request.Method {

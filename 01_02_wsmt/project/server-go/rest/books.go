@@ -30,7 +30,7 @@ func (api *Api) getBook(c *gin.Context) {
 	result := api.Db.Preload("Author").Find(&book, c.Param("id"))
 
 	if result.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Book not found"})
+		c.String(http.StatusNotFound, "Book not found")
 		return
 	}
 
@@ -44,7 +44,7 @@ func (api *Api) createBook(c *gin.Context) {
 	// Bind the data from the body to the Book model
 	// See https://github.com/gin-gonic/gin#model-binding-and-validation
 	if err := c.Bind(&book); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -53,7 +53,7 @@ func (api *Api) createBook(c *gin.Context) {
 	// Add the book to the author's books associations
 	err := api.Db.Model(&author).Association("Books").Append(&book)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -66,12 +66,12 @@ func (api *Api) updateBook(c *gin.Context) {
 	r := api.Db.Find(&book, c.Param("id"))
 
 	if r.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		c.String(http.StatusNotFound, "Author not found")
 		return
 	}
 
 	if err := c.Bind(&book); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -86,7 +86,7 @@ func (api *Api) deleteBook(c *gin.Context) {
 	r := api.Db.Find(&book, c.Param("id"))
 
 	if r.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		c.String(http.StatusNotFound, "Author not found")
 		return
 	}
 

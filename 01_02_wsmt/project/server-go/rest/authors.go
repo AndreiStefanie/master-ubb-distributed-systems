@@ -29,7 +29,7 @@ func (api *Api) getAuthor(c *gin.Context) {
 	author, result := api.getAuthorById(c.Param("id"))
 
 	if result.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		c.String(http.StatusNotFound, "Author not found")
 		return
 	}
 
@@ -43,7 +43,7 @@ func (api *Api) createAuthor(c *gin.Context) {
 	// Bind the data from the body to the Author model
 	// See https://github.com/gin-gonic/gin#model-binding-and-validation
 	if err := c.Bind(&author); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -57,12 +57,12 @@ func (api *Api) updateAuthor(c *gin.Context) {
 	author, r := api.getAuthorById(c.Param("id"))
 
 	if r.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		c.String(http.StatusNotFound, "Author not found")
 		return
 	}
 
 	if err := c.Bind(&author); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -76,7 +76,7 @@ func (api *Api) deleteAuthor(c *gin.Context) {
 	author, r := api.getAuthorById(c.Param("id"))
 
 	if r.RowsAffected == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Author not found"})
+		c.String(http.StatusNotFound, "Author not found")
 		return
 	}
 
