@@ -73,6 +73,7 @@ namespace Project
       try
       {
         HttpResponseMessage? response = null;
+        StringContent? data = null;
         switch (obj)
         {
           case ListOptions c:
@@ -90,12 +91,70 @@ namespace Project
             response = client.DeleteAsync(c.Resource + "/" + c.Id).Result;
             break;
           case AddOptions c:
-            var author = new Author();
-            author.name = c.Name;
+            switch (c.Resource)
+            {
+              case "authors":
+                {
+                  var author = new Author();
+                  author.name = c.Name;
+                  var json = JsonSerializer.Serialize<Author>(author);
+                  data = new StringContent(json, Encoding.UTF8, "application/json");
+                  break;
+                }
+              case "books":
+                {
+                  var book = new Book();
+                  book.title = c.Title;
+                  book.publicationYear = c.Year;
+                  book.authorId = c.Author;
+                  var json = JsonSerializer.Serialize<Book>(book);
+                  data = new StringContent(json, Encoding.UTF8, "application/json");
+                  break;
+                }
+              default:
+                Console.WriteLine("Unsupported resource ", c.Resource);
+                return;
+            }
 
-            var json = JsonSerializer.Serialize<Author>(author);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
-            response = client.PostAsync(c.Resource, data).Result;
+            if (data != null)
+            {
+              response = client.PostAsync(c.Resource, data).Result;
+            }
+            break;
+          case UpdateOptions c:
+            switch (c.Resource)
+            {
+              case "authors":
+                {
+                  var author = new Author();
+                  author.name = c.Name;
+                  var json = JsonSerializer.Serialize<Author>(author);
+                  data = new StringContent(json, Encoding.UTF8, "application/json");
+                  break;
+                }
+              case "books":
+                {
+                  var bookResponse = client.GetAsync(c.Resource + "/" + c.Id).Result;
+                  var book = JsonSerializer.Deserialize<Book>(bookResponse.Content.ReadAsStream());
+                  if (book == null)
+                  {
+                    Console.WriteLine("Could not retrieve the book for update ", c.Resource);
+                    return;
+                  }
+                  book.title = c.Title;
+                  var json = JsonSerializer.Serialize<Book>(book);
+                  data = new StringContent(json, Encoding.UTF8, "application/json");
+                  break;
+                }
+              default:
+                Console.WriteLine("Unsupported resource ", c.Resource);
+                return;
+            }
+
+            if (data != null)
+            {
+              response = client.PutAsync(c.Resource + "/" + c.Id, data).Result;
+            }
             break;
         }
         if (response != null)

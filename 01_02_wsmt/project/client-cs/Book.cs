@@ -4,8 +4,8 @@ namespace Project
   {
     public string title { get; set; } = "";
 
-    public int year { get; set; } = 0;
+    public int publicationYear { get; set; } = 0;
 
-    public int author { get; set; } = 0;
+    public int authorId { get; set; } = 0;
   }
 }
