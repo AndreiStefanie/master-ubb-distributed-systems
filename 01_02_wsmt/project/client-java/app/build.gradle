@@ -30,3 +30,12 @@ application {
     // Define the main class for the application.
     mainClass = 'wsmt.rest.App'
 }
+
+jar {
+  manifest {
+    attributes(
+      'Class-Path': configurations.runtimeClasspath.collect { it.getName() }.join(' '),
+      'Main-Class': 'wsmt.rest.App'
+    )
+  }
+}

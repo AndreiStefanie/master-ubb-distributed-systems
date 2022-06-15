@@ -1,15 +1,20 @@
 package wsmt.rest.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonIgnoreProperties(value = { "CreatedAt", "UpdatedAt", "DeletedAt" })
 public class Author {
-  private int ID;
+  @JsonProperty("ID")
+  private int id;
   private String name;
 
-  public int getID() {
-    return ID;
+  public int getId() {
+    return id;
   }
 
-  public void setID(int iD) {
-    ID = iD;
+  public void setId(int id) {
+    this.id = id;
   }
 
   public String getName() {
