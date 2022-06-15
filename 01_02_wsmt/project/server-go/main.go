@@ -42,11 +42,13 @@ func main() {
 
 	// Configure CORS
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowOrigins = []string{"http://localhost"}
 	corsConfig.AllowHeaders = []string{"Authorization", "Origin", "Content-Type"}
 	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}
 	corsConfig.AddExposeHeaders("X-Total-Count", "X-Filename")
 	r.Use(cors.New(corsConfig))
+
+	r.SetTrustedProxies(nil)
 
 	// Configure the health check
 	h, err := health.New()
