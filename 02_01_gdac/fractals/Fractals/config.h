@@ -4,8 +4,8 @@
 #define MAX_ITERATION 5000
 
 #define THREADS 8
-#define THREADS_X 32
-#define THREADS_Y 32
+#define THREADS_X 16
+#define THREADS_Y 16
 #define REPEAT 10
 
 #define IMAGE "./%s_%02d.png"

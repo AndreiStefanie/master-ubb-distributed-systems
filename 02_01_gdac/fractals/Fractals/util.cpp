@@ -108,7 +108,7 @@ void description(char* name, char* desc) {
 		sprintf(desc, "width=%d height=%d iterations=%d threads=%d", WIDTH, HEIGHT, MAX_ITERATION, THREADS);
 	}
 	if (strcmp("gpu", name) == 0) {
-		sprintf(desc, "width=%d height=%d iterations=%d block=%d,%d", WIDTH, HEIGHT, MAX_ITERATION, THREADS_X, THREADS_Y);
+		sprintf(desc, "width=%d height=%d iterations=%d block=%dx%d", WIDTH, HEIGHT, MAX_ITERATION, THREADS_X, THREADS_Y);
 	}
 	else {
 		sprintf(desc, "undefined usecase");
