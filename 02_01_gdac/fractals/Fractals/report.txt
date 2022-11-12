@@ -1,0 +1,5 @@
+name=gpu width=4096 height=4096 iterations=5000 block=32,32 min=4.91 max=4.91 mean=4.91 avg=4.91 stdev=0.00
+name=gpu width=4096 height=4096 iterations=5000 block=32,32 min=4.92 max=5.83 mean=5.28 avg=5.26 stdev=0.31
+name=gpu width=4096 height=4096 iterations=5000 block=32,32 min=3.36 max=3.84 mean=3.47 avg=3.50 stdev=0.16
+name=gpu width=4096 height=4096 iterations=5000 block=32,32 min=3.33 max=3.52 mean=3.35 avg=3.39 stdev=0.07
+name=gpu width=4096 height=4096 iterations=5000 block=32,32 min=3.35 max=3.56 mean=3.37 avg=3.44 stdev=0.08
