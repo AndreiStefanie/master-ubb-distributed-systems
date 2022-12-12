@@ -65,4 +65,6 @@ export interface FrameControl {
 export interface Tags {
   ssid?: string;
   channel?: number;
+  stationCount?: number;
+  utilization?: number;
 }

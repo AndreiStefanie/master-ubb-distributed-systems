@@ -10,6 +10,8 @@ export interface Network {
   signal: number;
   noise: number;
   rate: number;
+  devices: number;
+  utilization: number;
 }
 
 interface NetworksState {
@@ -35,6 +37,10 @@ const todosSlice = createSlice({
         noise: packet.radiotap.dbmNoise || 0,
         rate: (packet.radiotap.rate || 0) * 0.5,
         signal: packet.radiotap.dbmSignal || 0,
+        devices: packet.tags.stationCount || -1,
+        utilization: packet.tags.utilization
+          ? (packet.tags.utilization / 255) * 100
+          : -1,
       };
     },
   },

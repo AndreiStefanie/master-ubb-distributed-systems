@@ -1,3 +1,4 @@
+import { sliceBuffer } from './tools';
 import { Tags } from './types';
 
 const elementIds = {
@@ -8,7 +9,7 @@ const elementIds = {
 };
 
 const decodeFlag = (
-  buf: Uint8Array,
+  buf: Buffer,
   offset: number
 ): { tags: Tags; length: number } => {
   const tags: Tags = {};
@@ -17,16 +18,17 @@ const decodeFlag = (
 
   const typeId = buf[pos++];
   const length = buf[pos++];
-  const value = buf.slice(pos, pos + length);
 
   switch (typeId) {
     case elementIds.SSID:
-      tags.ssid = value.toString();
+      tags.ssid = sliceBuffer(buf, pos, pos + length).toString();
       break;
     case elementIds.CHANNEL:
       tags.channel = buf[pos];
       break;
     case elementIds.QBSS:
+      tags.stationCount = buf.readUint16LE(pos);
+      tags.utilization = buf.readUint8(pos + 2);
       break;
     case elementIds.RSN:
       break;
@@ -42,7 +44,7 @@ const decodeFlag = (
  * @param {Buffer} buf
  * @returns
  */
-export default (buf: Uint8Array) => {
+export default (buf: Buffer) => {
   let result = {};
   // Beacon frame body starts at 24
   // Timestamp, beacon interval, and compatibility info are 12 bytes

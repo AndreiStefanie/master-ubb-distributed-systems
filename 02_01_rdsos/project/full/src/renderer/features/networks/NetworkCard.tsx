@@ -13,6 +13,8 @@ export default function NetworkCard({
   channel,
   frequency,
   bssid,
+  devices,
+  utilization,
 }: Network) {
   return (
     <>
@@ -28,7 +30,13 @@ export default function NetworkCard({
               component="span"
               variant="caption"
             >
-              Channel {channel} | Frequency {frequency} GHz
+              Channel {channel} | Frequency {frequency} GHz{' '}
+              {devices >= 0
+                ? `| Utilization ${devices} device${
+                    devices > 1 ? 's' : ''
+                  } (${utilization.toFixed(2)}
+              %)`
+                : ''}
             </Typography>
           </>
         }
