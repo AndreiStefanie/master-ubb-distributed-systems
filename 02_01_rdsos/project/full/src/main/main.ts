@@ -9,7 +9,7 @@ import decodePacket from '../lib/packet';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-const monitorWifi = (handler: (arg: Packet | null) => void) => {
+const scanNetworks = (handler: (arg: Packet | null) => void) => {
   const devices = pcap.findalldevs();
 
   const pcapSession = pcap.createSession(devices[0].name, {
@@ -102,7 +102,7 @@ const createWindow = async () => {
     }
 
     // Start listening for packets
-    monitorWifi((packet: Packet | null) => {
+    scanNetworks((packet: Packet | null) => {
       mainWindow?.webContents.send('networks', packet);
     });
   });

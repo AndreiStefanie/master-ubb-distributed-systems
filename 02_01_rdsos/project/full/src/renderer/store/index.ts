@@ -1,9 +1,11 @@
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit';
 import networks from '../features/networks/networksSlice';
+import sniffer from '../features/sniffer/snifferSlice';
 
 export const store = configureStore({
   reducer: {
     networks,
+    sniffer,
   },
 });
 
