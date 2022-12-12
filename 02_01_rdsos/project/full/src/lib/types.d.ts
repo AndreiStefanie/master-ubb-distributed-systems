@@ -27,6 +27,10 @@ export interface RadiotapHeader {
   version: number;
   pad: number;
   length: number;
+  /**
+   * This number must be multiplied by 500 Kbps to get the actual rate.
+   * E.g. 12 actually means 6Mbps.
+   */
   rate?: number;
   channel?: number;
   frequency?: number;

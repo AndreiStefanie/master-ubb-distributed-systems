@@ -39,7 +39,7 @@ export default (buf: Buffer) => {
   };
 
   const fields = flagsToArray(buf.readUInt32LE(4), 32);
-  let offset = 8;
+  let offset = 0;
 
   let extraFields = { ...fields };
   while (extraFields[rtTypes.EXT]) {
@@ -65,7 +65,6 @@ export default (buf: Buffer) => {
   }
 
   if (fields[rtTypes.CHANNEL]) {
-    offset += 2;
     header.frequency = buf.readUInt16LE(offset);
     offset += 2;
     const chFlags = buf.readUInt16LE(offset);
@@ -79,6 +78,7 @@ export default (buf: Buffer) => {
       dynamicCCKOFDM: (chFlags & 0x0400) > 0,
       GFSK: (chFlags & 0x0800) > 0,
     };
+    offset += 2;
   }
 
   if (fields[rtTypes.FHSS]) {
