@@ -8,6 +8,8 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'no-plusplus': 'off',
     'no-bitwise': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
   },
   parserOptions: {
     ecmaVersion: 2020,
