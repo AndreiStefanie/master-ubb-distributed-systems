@@ -3,58 +3,9 @@ import path from 'path';
 import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import pcap from 'pcap';
-import { BeaconFrame } from '../lib/wifiTypes';
-import { EthFrame } from '../lib/ethTypes';
-import decode80211 from '../lib/wifi';
-import decodeEth from '../lib/eth';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-
-const listenForPackets = <T>(
-  filter: string,
-  monitor: boolean,
-  linkType: string,
-  decoder: (packet: pcap.PacketWithHeader) => T,
-  handler: (arg: T) => void
-): (() => void) => {
-  const devices = pcap.findalldevs();
-
-  const pcapSession = pcap.createSession(devices[0].name, {
-    filter, // https://www.tcpdump.org/manpages/pcap-filter.7.html
-    monitor,
-    promiscuous: false,
-  });
-
-  if (pcapSession.link_type !== linkType) {
-    throw new Error('Link type not supported');
-  }
-
-  pcapSession.on('packet', (rawPacket) => {
-    const data = decoder(rawPacket);
-    handler(data);
-  });
-
-  return pcapSession.close;
-};
-
-const scanNetworks = (handler: (arg: BeaconFrame | null) => void) =>
-  listenForPackets(
-    'type mgt subtype beacon',
-    true,
-    'LINKTYPE_IEEE802_11_RADIO',
-    decode80211,
-    handler
-  );
-
-const sniffTraffic = (handler: (arg: EthFrame | null) => void) =>
-  listenForPackets(
-    'tcp port 80',
-    false,
-    'LINKTYPE_ETHERNET',
-    decodeEth,
-    handler
-  );
+import { scanNetworks, sniffTraffic } from './network';
 
 class AppUpdater {
   constructor() {
@@ -128,12 +79,12 @@ const createWindow = async () => {
       mainWindow.show();
     }
 
-    // scanNetworks((frame) => {
-    //   mainWindow?.webContents.send('networks', frame);
-    // });
-    sniffTraffic((frame) => {
-      mainWindow?.webContents.send('data', frame);
+    scanNetworks((frame) => {
+      mainWindow?.webContents.send('networks', frame);
     });
+    // sniffTraffic((frame) => {
+    //   mainWindow?.webContents.send('data', frame);
+    // });
   });
 
   mainWindow.on('closed', () => {
