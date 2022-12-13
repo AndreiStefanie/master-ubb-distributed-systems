@@ -1,5 +1,5 @@
 import { sliceBuffer } from './tools';
-import { Tags } from './wifi';
+import { Tags } from './wifiTypes';
 
 const elementIds = {
   SSID: 0,

@@ -1,14 +1,14 @@
 import pcap from 'pcap';
 import mac from 'mac-address';
-import { sliceBuffer, flagsToArray, readBigUInt64BE } from './tools';
+import {
+  sliceBuffer,
+  flagsToArray,
+  readBigUInt64BE,
+  slicePacket,
+} from './tools';
 import decodeRadiotap from './radiotap';
 import decodeTags from './tags';
-import { FrameControl, BeaconFrame } from './wifi';
-
-const slicePacket = ({ header, buf }: pcap.PacketWithHeader): Buffer => {
-  const len = header.readUInt32LE(12);
-  return sliceBuffer(buf, 0, len);
-};
+import { FrameControl, BeaconFrame } from './wifiTypes';
 
 /**
  *

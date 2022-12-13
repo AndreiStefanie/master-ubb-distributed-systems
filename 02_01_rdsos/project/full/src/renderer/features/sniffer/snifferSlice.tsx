@@ -1,36 +1,21 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'renderer/store';
-import { BeaconFrame } from 'lib/wifi';
+import { EthFrame } from 'lib/ethTypes';
 
-export interface TCPPacket {
-  ssid: string;
-  bssid: string;
-  channel: number;
-  frequency: number;
-  signal: number;
-  noise: number;
-  rate: number;
-  devices: number;
-  utilization: number;
-}
-
-type SnifferState = TCPPacket[];
+type SnifferState = EthFrame[];
 
 const todosSlice = createSlice({
   name: 'sniffer',
   initialState: [] as SnifferState,
   reducers: {
-    packetReceived(state, action: PayloadAction<BeaconFrame>) {
-      const packet = action.payload;
-
-      if (!packet?.tags?.ssid) {
-        // return;
-      }
+    ethFrameReceived(state, action: PayloadAction<EthFrame>) {
+      const frame = action.payload;
+      state.push(frame);
     },
   },
 });
 
 export const selectPackets = (state: RootState) => state.sniffer;
 
-export const { packetReceived } = todosSlice.actions;
+export const { ethFrameReceived } = todosSlice.actions;
 export default todosSlice.reducer;

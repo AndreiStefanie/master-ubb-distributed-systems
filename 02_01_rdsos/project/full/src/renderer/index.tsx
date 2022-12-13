@@ -1,9 +1,11 @@
-import { BeaconFrame } from 'lib/wifi';
+import { EthFrame } from 'lib/ethTypes';
+import { BeaconFrame } from 'lib/wifiTypes';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { throttle } from 'throttle-debounce';
 import App from './App';
-import { packetReceived } from './features/networks/networksSlice';
+import { beaconFrameReceived } from './features/networks/networksSlice';
+import { ethFrameReceived } from './features/sniffer/snifferSlice';
 import { store } from './store';
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -15,14 +17,26 @@ root.render(
   </Provider>
 );
 
-const handlePackets = throttle(300, (data: BeaconFrame | null) => {
+const handleBeaconFrames = throttle(300, (data: BeaconFrame | null) => {
   if (!data) {
     return;
   }
 
-  store.dispatch(packetReceived(data));
+  store.dispatch(beaconFrameReceived(data));
 });
 
-window.electron.onMonitorWifi('networks', (data: BeaconFrame | null) =>
-  handlePackets(data)
+const handleEthFrames = throttle(300, (data: EthFrame | null) => {
+  if (!data) {
+    return;
+  }
+
+  store.dispatch(ethFrameReceived(data));
+});
+
+window.electron.onBeaconFrame('networks', (data: BeaconFrame | null) =>
+  handleBeaconFrames(data)
+);
+
+window.electron.onEthFrame('data', (data: EthFrame | null) =>
+  handleEthFrames(data)
 );

@@ -48,6 +48,7 @@ export interface IpPacket {
 }
 
 export interface EthFrame {
+  id: string;
   destMAC: string;
   srcMAC: string;
   etherType: number;

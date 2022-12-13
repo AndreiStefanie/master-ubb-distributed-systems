@@ -1,3 +1,5 @@
+import pcap from 'pcap';
+
 export const flagsToArray = (data: number, size: number) => {
   const flags = [];
   for (let i = 0; i < size; i++) {
@@ -23,3 +25,8 @@ export const readBigUInt64BE = (buffer: Buffer, offset = 0) => {
 
 export const sliceBuffer = (buf: Buffer, start = 0, len = 0) =>
   Buffer.from(Uint8Array.prototype.slice.call(buf, start, len));
+
+export const slicePacket = ({ header, buf }: pcap.PacketWithHeader): Buffer => {
+  const len = header.readUInt32LE(12);
+  return sliceBuffer(buf, 0, len);
+};

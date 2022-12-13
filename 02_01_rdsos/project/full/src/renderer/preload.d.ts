@@ -1,11 +1,17 @@
-import { BeaconFrame } from 'lib/wifi';
+import { EthFrame } from 'lib/ethTypes';
+import { BeaconFrame } from 'lib/wifiTypes';
+import { Channels } from 'main/preload';
 
 declare global {
   interface Window {
     electron: {
-      onMonitorWifi: (
-        channel: string,
+      onBeaconFrame: (
+        channel: Channels,
         callback: (data: BeaconFrame | null) => void
+      ) => void;
+      onEthFrame: (
+        channel: Channels,
+        callback: (data: EthFrame) => void
       ) => void;
     };
   }

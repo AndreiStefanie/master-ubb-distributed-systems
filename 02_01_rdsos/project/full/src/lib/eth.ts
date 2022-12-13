@@ -1,16 +1,15 @@
+import pcap from 'pcap';
 import mac from 'mac-address';
+import { v4 as uuidv4 } from 'uuid';
 import { EthFrame } from './ethTypes';
 import ipDecode from './ip';
+import { slicePacket } from './tools';
 
-/**
- * Decode an Ethernet frame
- * https://en.wikipedia.org/wiki/Ethernet_frame
- * @param {Buffer} rawPacket
- * @returns
- */
-export default (rawPacket: Buffer): EthFrame => {
+const decodeEthFrame = (rawPacket: Buffer): EthFrame => {
   let offset = 0;
   const frame = {} as Partial<EthFrame>;
+  frame.id = uuidv4();
+
   frame.destMAC = mac.toString(rawPacket, offset);
   offset += 6;
   frame.srcMAC = mac.toString(rawPacket, offset);
@@ -44,3 +43,12 @@ export default (rawPacket: Buffer): EthFrame => {
 
   return frame as EthFrame;
 };
+
+/**
+ * Decode an Ethernet frame
+ * https://en.wikipedia.org/wiki/Ethernet_frame
+ * @param {Buffer} rawPacket
+ * @returns
+ */
+export default (packet: pcap.PacketWithHeader): EthFrame =>
+  decodeEthFrame(slicePacket(packet));

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from 'renderer/store';
-import { BeaconFrame } from 'lib/wifi';
+import { BeaconFrame } from 'lib/wifiTypes';
 
 export interface Network {
   ssid: string;
@@ -22,7 +22,7 @@ const todosSlice = createSlice({
   name: 'networks',
   initialState: {} as NetworksState,
   reducers: {
-    packetReceived(state, action: PayloadAction<BeaconFrame>) {
+    beaconFrameReceived(state, action: PayloadAction<BeaconFrame>) {
       const packet = action.payload;
 
       if (!packet?.tags?.ssid) {
@@ -49,5 +49,5 @@ const todosSlice = createSlice({
 export const selectNetworks = (state: RootState) =>
   Object.values(state.networks).sort((a, b) => b.signal - a.signal);
 
-export const { packetReceived } = todosSlice.actions;
+export const { beaconFrameReceived } = todosSlice.actions;
 export default todosSlice.reducer;
