@@ -95,6 +95,8 @@ const columns: GridColDef<EthFrame>[] = [
   },
 ];
 export default function PacketList() {
+  React.useMemo(() => window.electron.sniff(), []);
+
   const packets = useAppSelector(selectPackets);
 
   return (

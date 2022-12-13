@@ -7,6 +7,8 @@ import NetworkCard from './NetworkCard';
 import { selectNetworks } from './networksSlice';
 
 export default function NetworkList() {
+  React.useMemo(() => window.electron.scan(), []);
+
   const networks = useAppSelector(selectNetworks);
 
   return (

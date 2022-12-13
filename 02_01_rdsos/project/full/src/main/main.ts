@@ -1,6 +1,6 @@
 /* eslint global-require: off, no-console: off, promise/always-return: off, @typescript-eslint/no-explicit-any: off */
 import path from 'path';
-import { app, BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -78,13 +78,6 @@ const createWindow = async () => {
     } else {
       mainWindow.show();
     }
-
-    scanNetworks((frame) => {
-      mainWindow?.webContents.send('networks', frame);
-    });
-    // sniffTraffic((frame) => {
-    //   mainWindow?.webContents.send('data', frame);
-    // });
   });
 
   mainWindow.on('closed', () => {
@@ -117,9 +110,25 @@ app.on('window-all-closed', () => {
   }
 });
 
+const handleScan = () => {
+  console.log('scanning');
+  scanNetworks((frame) => {
+    mainWindow?.webContents.send('networks', frame);
+  });
+};
+
+const handleSniff = () => {
+  console.log('sniffing');
+  sniffTraffic((frame) => {
+    mainWindow?.webContents.send('data', frame);
+  });
+};
+
 app
   .whenReady()
   .then(() => {
+    ipcMain.on('scan', handleScan);
+    ipcMain.on('sniff', handleSniff);
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

@@ -21,4 +21,6 @@ contextBridge.exposeInMainWorld('electron', {
       callback(frame)
     );
   },
+  scan: () => ipcRenderer.send('scan'),
+  sniff: () => ipcRenderer.send('sniff'),
 });

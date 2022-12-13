@@ -13,6 +13,8 @@ declare global {
         channel: Channels,
         callback: (data: EthFrame) => void
       ) => void;
+      scan: () => void;
+      sniff: () => void;
     };
   }
 }

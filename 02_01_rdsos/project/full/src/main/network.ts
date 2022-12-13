@@ -4,6 +4,8 @@ import { EthFrame } from '../lib/ethTypes';
 import decode80211 from '../lib/wifi';
 import decodeEth from '../lib/eth';
 
+let session: pcap.PcapSession | undefined;
+
 const listenForPackets = <T>(
   filter: string,
   monitor: boolean,
@@ -11,7 +13,7 @@ const listenForPackets = <T>(
   linkType: string,
   decoder: (packet: pcap.PacketWithHeader) => T,
   handler: (arg: T) => void
-): (() => void) => {
+): pcap.PcapSession => {
   const devices = pcap.findalldevs();
 
   const pcapSession = pcap.createSession(devices[0].name, {
@@ -29,22 +31,32 @@ const listenForPackets = <T>(
     handler(data);
   });
 
-  return pcapSession.close;
+  return pcapSession;
 };
 
 export const scanNetworks = (handler: (arg: BeaconFrame | null) => void) => {
-  return listenForPackets(
+  if (session) {
+    session.close();
+    session = undefined;
+  }
+
+  session = listenForPackets(
     'type mgt subtype beacon',
     true,
-    false,
+    true,
     'LINKTYPE_IEEE802_11_RADIO',
     decode80211,
     handler
   );
 };
 
-export const sniffTraffic = (handler: (arg: EthFrame | null) => void) =>
-  listenForPackets(
+export const sniffTraffic = (handler: (arg: EthFrame | null) => void) => {
+  if (session) {
+    session.close();
+    session = undefined;
+  }
+
+  session = listenForPackets(
     'tcp port 80',
     false,
     true,
@@ -52,3 +64,4 @@ export const sniffTraffic = (handler: (arg: EthFrame | null) => void) =>
     decodeEth,
     handler
   );
+};
