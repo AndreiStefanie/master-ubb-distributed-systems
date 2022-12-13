@@ -3,7 +3,7 @@ import mac from 'mac-address';
 import { sliceBuffer, flagsToArray, readBigUInt64BE } from './tools';
 import decodeRadiotap from './radiotap';
 import decodeTags from './tags';
-import { FrameControl, Packet } from './types';
+import { FrameControl, BeaconFrame } from './wifi';
 
 const slicePacket = ({ header, buf }: pcap.PacketWithHeader): Buffer => {
   const len = header.readUInt32LE(12);
@@ -14,8 +14,8 @@ const slicePacket = ({ header, buf }: pcap.PacketWithHeader): Buffer => {
  *
  * @param {Buffer} packet The raw L2 packet
  */
-const decodePacket = (packet: Buffer): Packet | null => {
-  const frame: Partial<Packet> = {};
+const decodePacket = (packet: Buffer): BeaconFrame | null => {
+  const frame: Partial<BeaconFrame> = {};
 
   frame.radiotap = { ...decodeRadiotap(packet) };
 
@@ -69,8 +69,8 @@ const decodePacket = (packet: Buffer): Packet | null => {
   // Frame control sequence
   frame.fcs = buf.readUInt32BE(buf.length - 4);
 
-  return frame as Packet;
+  return frame as BeaconFrame;
 };
 
-export default (packet: pcap.PacketWithHeader): Packet | null =>
+export default (packet: pcap.PacketWithHeader): BeaconFrame | null =>
   decodePacket(slicePacket(packet));

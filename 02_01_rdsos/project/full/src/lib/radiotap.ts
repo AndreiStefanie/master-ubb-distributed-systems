@@ -1,5 +1,5 @@
 import { flagsToArray } from './tools';
-import { RadiotapHeader } from './types';
+import { RadiotapHeader } from './wifi';
 
 /**
  * Parse the radiotap header

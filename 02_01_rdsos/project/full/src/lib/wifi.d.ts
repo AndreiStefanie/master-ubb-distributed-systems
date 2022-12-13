@@ -1,4 +1,4 @@
-export interface Packet {
+export interface BeaconFrame {
   radiotap: RadiotapHeader;
   frameControl: FrameControl;
   duration: number;

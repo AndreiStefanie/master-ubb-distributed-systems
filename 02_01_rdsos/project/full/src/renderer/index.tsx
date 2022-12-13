@@ -1,4 +1,4 @@
-import { Packet } from 'lib/types';
+import { BeaconFrame } from 'lib/wifi';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { throttle } from 'throttle-debounce';
@@ -15,7 +15,7 @@ root.render(
   </Provider>
 );
 
-const handlePackets = throttle(300, (data: Packet | null) => {
+const handlePackets = throttle(300, (data: BeaconFrame | null) => {
   if (!data) {
     return;
   }
@@ -23,6 +23,6 @@ const handlePackets = throttle(300, (data: Packet | null) => {
   store.dispatch(packetReceived(data));
 });
 
-window.electron.onMonitorWifi('networks', (data: Packet | null) =>
+window.electron.onMonitorWifi('networks', (data: BeaconFrame | null) =>
   handlePackets(data)
 );

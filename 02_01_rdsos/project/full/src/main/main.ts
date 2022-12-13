@@ -4,12 +4,12 @@ import { app, BrowserWindow, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import pcap from 'pcap';
-import { Packet } from '../lib/types';
+import { BeaconFrame } from '../lib/wifi';
 import decodePacket from '../lib/packet';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 
-const scanNetworks = (handler: (arg: Packet | null) => void) => {
+const scanNetworks = (handler: (arg: BeaconFrame | null) => void) => {
   const devices = pcap.findalldevs();
 
   const pcapSession = pcap.createSession(devices[0].name, {
@@ -102,7 +102,7 @@ const createWindow = async () => {
     }
 
     // Start listening for packets
-    scanNetworks((packet: Packet | null) => {
+    scanNetworks((packet: BeaconFrame | null) => {
       mainWindow?.webContents.send('networks', packet);
     });
   });
