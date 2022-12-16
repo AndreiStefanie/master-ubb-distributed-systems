@@ -8,7 +8,9 @@
 
 using namespace std;
 
-__global__ void generate_image(unsigned char* image, unsigned char* colormap, int width, int height, int max) {
+__constant__ unsigned char d_colormap[(MAX_ITERATION + 1) * 3];
+
+__global__ void generate_image(unsigned char* image, int width, int height, int max) {
 	unsigned int x_dim = blockIdx.x * blockDim.x + threadIdx.x;
 	unsigned int y_dim = blockIdx.y * blockDim.y + threadIdx.y;
 	unsigned int index = 4 * width * y_dim + 4 * x_dim;
@@ -32,7 +34,7 @@ __global__ void generate_image(unsigned char* image, unsigned char* colormap, in
 		iteration = max;
 	}
 
-	unsigned char* c = &colormap[iteration * 3];
+	unsigned char* c = &d_colormap[iteration * 3];
 	image[index + 0] = c[0];
 	image[index + 1] = c[1];
 	image[index + 2] = c[2];
@@ -57,14 +59,6 @@ int main(int argc, char** argv) {
 
 	init_colormap(MAX_ITERATION, h_colormap);
 
-	// Initialize the device image and colormap
-	unsigned char* d_colormap;
-	status = cudaMalloc((void**)&d_colormap, colormap_size);
-	if (cudaSuccess != status) {
-		fprintf(stderr, "cudaMalloc failed!");
-		return status;
-	}
-
 	unsigned char* d_image;
 	status = cudaMalloc((void**)&d_image, image_size);
 	if (cudaSuccess != status) {
@@ -79,13 +73,13 @@ int main(int argc, char** argv) {
 		// Start the timer, including the copy of the image between the host and the device
 		ftime(&start);
 
-		status = cudaMemcpy(d_colormap, h_colormap, colormap_size, cudaMemcpyHostToDevice);
+		status = cudaMemcpyToSymbol(d_colormap, h_colormap, colormap_size);
 		if (cudaSuccess != status) {
 			fprintf(stderr, "Failed to copy colormap to device");
 			goto Error;
 		}
 
-		generate_image << <gridDim, blockDim >> > (d_image, d_colormap, WIDTH, HEIGHT, MAX_ITERATION);
+		generate_image << <gridDim, blockDim >> > (d_image, WIDTH, HEIGHT, MAX_ITERATION);
 
 		status = cudaGetLastError();
 		if (cudaSuccess != status) {
@@ -119,7 +113,6 @@ Error:
 	free(h_image);
 	free(h_colormap);
 	cudaFree(d_image);
-	cudaFree(d_colormap);
 
 	return status;
 }
