@@ -265,28 +265,27 @@ __global__ void find_nonce(size_t* result, BYTE* hash, bool* found, size_t strid
 	}
 }
 
-void get_gpu_props(int* prop)
+void get_optimal_sizes(int* grid_size, int* block_size)
 {
 	cudaDeviceProp deviceProp;
 
-	prop[0] = 0;
-	prop[1] = 0;
+	*grid_size = 32;
+	*block_size = 32;
 
-	if (cudaSuccess != cudaGetDeviceProperties(&deviceProp, 0))
-	{
-		prop[0] = 32;
-		prop[1] = 32;
+	if (cudaSuccess != cudaGetDeviceProperties(&deviceProp, 0)) {
 		return;
 	}
-	cudaOccupancyMaxActiveBlocksPerMultiprocessor(&prop[0], find_nonce, deviceProp.warpSize, 0);
-	prop[1] = deviceProp.warpSize;
+
+	cudaOccupancyMaxPotentialBlockSize(grid_size, block_size, find_nonce);
+	*grid_size = 1024;
 }
 
 int main(int argc, char** argv) {
 	bool h_found = false;
 	size_t h_nonce = 0;
 	size_t nonce_size = sizeof(size_t);
-	int gpu_props[2];
+	int grid_size;
+	int block_size;
 
 	size_t i = 0;
 	size_t stride = 0;
@@ -297,7 +296,7 @@ int main(int argc, char** argv) {
 
 	cudaError_t status = cudaSuccess;
 
-	get_gpu_props(gpu_props);
+	get_optimal_sizes(&grid_size, &block_size);
 
 	// Initialize the input data
 	BYTE* h_digest = (BYTE*)malloc(SHA_SIZE);
@@ -332,9 +331,9 @@ int main(int argc, char** argv) {
 	// Start the timer
 	ftime(&start);
 
-	th_count = gpu_props[0] * gpu_props[1];
+	th_count = grid_size * block_size;
 	do {
-		find_nonce << <gpu_props[0], gpu_props[1] >> > (d_nonce, d_digest, d_found, stride);
+		find_nonce << <grid_size, block_size >> > (d_nonce, d_digest, d_found, stride);
 		status = cudaGetLastError();
 		if (cudaSuccess != status) {
 			fprintf(stderr, "Failed to launch the kernel!");
@@ -374,7 +373,7 @@ int main(int argc, char** argv) {
 	ftime(&end);
 	seconds = end.time - start.time + ((double)end.millitm - (double)start.millitm) / 1000.0;
 
-	printf("Hashrate: %s hashes/s. Duration: %.2f seconds\n", fmt_num((size_t)(stride / seconds)).c_str(), seconds);
+	printf("Hashrate: %s hashes/s | Duration: %.2f seconds | Threads %d,%d\n", fmt_num((size_t)(stride / seconds)).c_str(), seconds, grid_size, block_size);
 
 	if (true == h_found) {
 		char hex_result[SHA_SIZE * 2 + 1]{};
