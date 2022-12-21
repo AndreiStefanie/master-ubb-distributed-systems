@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <ucontext.h>
 
-#define MAX_THREADS_COUNT
+#define MAX_THREADS_COUNT 1000
 
 typedef enum state_t {
   ULT_RUNNING,
@@ -35,7 +35,12 @@ typedef struct ult_t {
   bool waited_for;
 } ult_t;
 
-void ult_init();
+/**
+ * Initialize the ULT library.
+ * @param quantum The quantum of time each thread will receive from the
+ * scheduler. Specified in microseconds
+ */
+int ult_init(long quantum);
 
 /**
  * Create an UTL thread (stored in the reference given by the first parameter)

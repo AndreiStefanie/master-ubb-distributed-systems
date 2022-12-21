@@ -6,7 +6,7 @@
 
 void* f(void* arg) {
   for (size_t i = 0; i < 100; i++) {
-    printf("Hello from thread %lu (%lu)", ult_self(), i);
+    printf("Hello from thread %lu (%lu)\n", ult_self(), i);
   }
 
   return NULL;
@@ -15,7 +15,7 @@ void* f(void* arg) {
 int main() {
   pid_t threads[THREAD_COUNT];
 
-  ult_init();
+  ult_init(100);
 
   for (size_t i = 0; i < THREAD_COUNT; i++) {
     ult_create(&threads[i], &f, NULL);
