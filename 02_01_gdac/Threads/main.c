@@ -6,7 +6,7 @@
 
 void* f(void* arg) {
   for (size_t i = 0; i < 100; i++) {
-    printf("Hello from thread %d (%d)", ult_self(), i);
+    printf("Hello from thread %lu (%lu)", ult_self(), i);
   }
 
   return NULL;
