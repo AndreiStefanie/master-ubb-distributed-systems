@@ -14,12 +14,7 @@
 
 #define MAX_THREADS_COUNT 1000
 
-typedef enum state_t {
-  ULT_RUNNING,
-  ULT_READY,
-  ULT_BLOCKED,
-  ULT_TERMINATED
-} state_t;
+typedef enum state_t { ULT_BLOCKED, ULT_READY, ULT_TERMINATED } state_t;
 
 typedef unsigned long int tid_t;
 
@@ -31,6 +26,8 @@ typedef struct ult_t {
   ucontext_t context;
 
   state_t state;
+  void *(*start_routine)(void *);
+  void *arg;
   void *retval;
   bool waited_for;
 } ult_t;
@@ -49,7 +46,7 @@ int ult_init(long quantum);
  *
  * Similar to https://man7.org/linux/man-pages/man3/pthread_create.3.html
  */
-int ult_create(pid_t *thread_id, void *(*start_routine)(void *), void *arg);
+int ult_create(tid_t *thread_id, void *(*start_routine)(void *), void *arg);
 
 /**
  * Wait for the given thread to terminate.

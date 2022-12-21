@@ -4,17 +4,39 @@
 #include <stdio.h>
 #include <sys/time.h>
 
-struct sigaction timer_handler;
+#define SIGNAL SIGPROF
+
 struct itimerval timer;
-sigset_t sigset;
 
 static size_t thread_count = 0;
-static size_t current_thread = -1;
+static size_t current_tid = -1;
 
-static ucontext_t scheduler_context;
+static ucontext_t *main_context;
 
 // All ULT threads
 static ult_t threads_list[MAX_THREADS_COUNT];
+
+static void _block_sigprof() {
+  sigset_t sigprof;
+  sigemptyset(&sigprof);
+  sigaddset(&sigprof, SIGNAL);
+
+  if (sigprocmask(SIG_BLOCK, &sigprof, NULL) == -1) {
+    perror("sigprocmask");
+    abort();
+  }
+}
+
+static void _unblock_sigprof() {
+  sigset_t sigprof;
+  sigemptyset(&sigprof);
+  sigaddset(&sigprof, SIGNAL);
+
+  if (sigprocmask(SIG_UNBLOCK, &sigprof, NULL) == -1) {
+    perror("sigprocmask");
+    abort();
+  }
+}
 
 static tid_t _get_next_ready_thread() {
   tid_t next_tid;
@@ -22,7 +44,7 @@ static tid_t _get_next_ready_thread() {
 
   for (size_t i = 1; i < thread_count && !found; i++) {
     // Round robin
-    size_t t_index = (current_thread + i) % thread_count;
+    size_t t_index = (current_tid + i) % thread_count;
     if (ULT_READY == threads_list[t_index].state) {
       found = true;
       next_tid = t_index;
@@ -32,30 +54,64 @@ static tid_t _get_next_ready_thread() {
   return next_tid;
 }
 
-static void _ult_schedule() {
+static void _ult_schedule(int signum, siginfo_t *nfo, void *context) {
   // No threads left
   if (0 == thread_count) {
     exit(0);
   }
 
-  ult_t *current_th = &threads_list[current_thread];
-  current_thread = _get_next_ready_thread();
-  ult_t *next_th = &threads_list[current_thread];
+  _block_sigprof();
+  ult_t *current_th = &threads_list[current_tid];
+  current_tid = _get_next_ready_thread();
+  ult_t *next_th = &threads_list[current_tid];
+  _unblock_sigprof();
   swapcontext(&current_th->context, &next_th->context);
 }
 
-// static void _ult_timer() { raise(SIGPROF); }
+static bool _init_profiling_timer(long quantum) {
+  // Install signal handler
+  sigset_t all;
+  sigfillset(&all);
+
+  const struct sigaction alarm = {.sa_sigaction = _ult_schedule,
+                                  .sa_mask = all,
+                                  .sa_flags = SA_SIGINFO | SA_RESTART};
+
+  struct sigaction old;
+
+  if (sigaction(SIGNAL, &alarm, &old) == -1) {
+    perror("sigaction");
+    abort();
+  }
+
+  const struct itimerval timer = {
+      {0, quantum}, {0, 1}  // arms the timer as soon as possible
+  };
+
+  // Enable timer
+  if (setitimer(ITIMER_PROF, &timer, NULL) == -1) {
+    if (sigaction(SIGNAL, &old, NULL) == -1) {
+      perror("sigaction");
+      abort();
+    }
+
+    return false;
+  }
+
+  return true;
+}
 
 /**
  * Wrapper function that stores the return value from the routine executed by
  * the current thread
  */
-static void _ult_wrapper(void *(*start_routine)(void *), void *arg) {
-  sigprocmask(SIG_BLOCK, &sigset, NULL);
-  ult_t *t = &threads_list[current_thread];
-  t->retval = (*start_routine)(arg);
-  t->state = ULT_TERMINATED;
-  sigprocmask(SIG_UNBLOCK, &sigset, NULL);
+static void _ult_wrapper() {
+  _block_sigprof();
+  ult_t *t = &threads_list[current_tid];
+  _unblock_sigprof();
+
+  void *result = t->start_routine(t->arg);
+  ult_exit(result);
 }
 
 tid_t _init_next_thread(state_t state) {
@@ -80,57 +136,39 @@ tid_t _create_thread(state_t state, void *(*start_routine)(void *), void *arg) {
   t->context.uc_stack.ss_sp = malloc(SIGSTKSZ);
   t->context.uc_stack.ss_size = SIGSTKSZ;
   t->context.uc_stack.ss_flags = 0;
-  t->context.uc_link = &scheduler_context;
+  t->context.uc_link = main_context;
+  makecontext(&t->context, (void (*)(void))_ult_wrapper, 0);
 
-  makecontext(&t->context, (void (*)(void))_ult_wrapper, 2, start_routine, arg);
+  t->start_routine = start_routine;
+  t->arg = arg;
 
   return tid;
 }
 
 int ult_init(long quantum) {
-  // Create the context for the thread scheduler
-  if (-1 == getcontext(&scheduler_context)) {
-    exit(EXIT_FAILURE);
-  }
-  // scheduler_context.uc_stack.ss_sp = malloc(SIGSTKSZ);
-  // scheduler_context.uc_stack.ss_size = SIGSTKSZ;
-  // scheduler_context.uc_stack.ss_flags = 0;
-  // // Exit when the scheduler context ends
-  // scheduler_context.uc_link = NULL;
-  // makecontext(&scheduler_context, (void (*)(void)) & _ult_timer, 0);
-
-  // Set up the scheduler - basically a signal handler called every `quantum`ms
-  sigemptyset(&sigset);
-  sigaddset(&sigset, SIGPROF);
-  timer_handler.sa_handler = &_ult_schedule;
-  sigemptyset(&timer_handler.sa_mask);
-  sigaddset(&timer_handler.sa_mask, SIGPROF);
-  sigaction(SIGPROF, &timer_handler, NULL);
-  timer.it_interval.tv_sec = quantum / 1000000;
-  timer.it_interval.tv_usec = quantum;
-  timer.it_value = timer.it_interval;
+  _init_profiling_timer(quantum);
 
   // Register main as an ULT thread
-  current_thread = _init_next_thread(ULT_RUNNING);
+  current_tid = _init_next_thread(ULT_READY);
+  main_context = &threads_list[current_tid].context;
 
-  // Start the scheduler timer
-  return setitimer(ITIMER_PROF, &timer, NULL);
+  return setitimer(ITIMER_REAL, &timer, NULL);
 }
 
-int ult_create(pid_t *thread_id, void *(*start_routine)(void *), void *arg) {
+int ult_create(tid_t *thread_id, void *(*start_routine)(void *), void *arg) {
   if (MAX_THREADS_COUNT - 1 == thread_count) {
     // Max number of threads reached
     return EXIT_FAILURE;
   }
 
-  sigprocmask(SIG_BLOCK, &sigset, NULL);
+  _block_sigprof();
   *thread_id = _create_thread(ULT_READY, start_routine, arg);
-  sigprocmask(SIG_UNBLOCK, &sigset, NULL);
+  _unblock_sigprof();
 
   return 0;
 }
 
-void ult_yield() { raise(SIGPROF); }
+void ult_yield() { raise(SIGNAL); }
 
 int ult_join(tid_t thread_id, void **retval) {
   ult_t *t = &threads_list[thread_id];
@@ -145,14 +183,15 @@ int ult_join(tid_t thread_id, void **retval) {
   return 0;
 }
 
-tid_t ult_self() { return threads_list[current_thread].tid; }
+tid_t ult_self() { return threads_list[current_tid].tid; }
 
 void ult_exit(void *retval) {
-  sigprocmask(SIG_BLOCK, &sigset, NULL);
-  ult_t *t = &threads_list[current_thread];
+  _block_sigprof();
+  ult_t *t = &threads_list[current_tid];
   t->retval = retval;
   t->state = ULT_TERMINATED;
-  sigprocmask(SIG_UNBLOCK, &sigset, NULL);
+  // thread_count--;
+  _unblock_sigprof();
 
   ult_yield();
 }
