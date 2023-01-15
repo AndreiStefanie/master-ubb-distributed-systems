@@ -1,18 +1,18 @@
 version: '3.8'
 
 services:
-  redis:
-    image: docker.io/bitnami/redis:7.0
-    environment:
-      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
-    env_file:
-      - ./redis/.env
-    ports:
-      - '6379:6379'
-    volumes:
-      - ./redis/overrides.conf:/opt/bitnami/redis/mounted-etc/overrides.conf
-      - 'redis_data:/bitnami/redis/data'
-    user: root
+  # redis:
+  #   image: docker.io/bitnami/redis:7.0
+  #   environment:
+  #     - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+  #   env_file:
+  #     - ./redis/.env
+  #   ports:
+  #     - '6379:6379'
+  #   volumes:
+  #     - ./redis/overrides.conf:/opt/bitnami/redis/mounted-etc/overrides.conf
+  #     - 'redis_data:/bitnami/redis/data'
+  #   user: root
   postgres:
     image: docker.io/bitnami/postgresql:15
     environment:

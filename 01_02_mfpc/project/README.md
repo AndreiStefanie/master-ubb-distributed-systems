@@ -44,10 +44,15 @@ The client application is a CLI program written in Typescript/Node.js (it can be
 
 ## Concurrency control
 
+> Postgres uses by default [Read Committed Isolation Level](https://www.postgresql.org/docs/current/transaction-iso.html#XACT-READ-COMMITTED) which
+
 The concurrency control model is MVCC and is implemented as follows:
 
-- Each transaction is identified by an ID - `txid`. This is a monotonically increasing sequence number managed by [Redis](https://redis.io/) with [AOF](https://redis.io/docs/management/persistence/#append-only-file) enabled and `fsync` for every operation. Redis was chosen for being single threaded and for offering an [atomic operation](https://redis.io/commands/incr/) for this use case.
-- Each record (row in Postgres and node in Neo4j) also contains `txid_min`, `txid_max`
+- Each transaction is identified by an ID - `txid`. This is a monotonically increasing sequence number ~~managed by [Redis](https://redis.io/) with [AOF](https://redis.io/docs/management/persistence/#append-only-file) enabled and `fsync` for every operation. Redis was chosen for being single threaded and for offering an [atomic operation](https://redis.io/commands/incr/) for this use case~~
+- Each transaction is stored in the `mvcc.transactions` table in Postgres. (txid, timestamp, status). The `txid` is based on the `GENERATED AS IDENTITY` feature of [CREATE TABLE](https://www.postgresql.org/docs/15/sql-createtable.html).
+- Each data record (row in Postgres and node in Neo4j) contains `txid_min`, `txid_max`
+- `txid_min` indicates the transaction that created the row
+- `txid_max` indicates the transaction that deleted the row. `UPDATE` also counts as deletion since a new row (version) is created.
 
 ### Deadlocks
 
