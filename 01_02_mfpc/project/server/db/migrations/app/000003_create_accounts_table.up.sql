@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS accounts(
+  txid_min INT NOT NULL,
+  txid_max INT NOT NULL DEFAULT 0,
+  tx_max_commited BOOLEAN NOT NULL DEFAULT FALSE,
+  tx_max_rolled_back BOOLEAN NOT NULL DEFAULT FALSE,
+  id INT GENERATED ALWAYS AS IDENTITY,
+  user_id INT NOT NULL,
+  balance INT NOT NULL DEFAULT 0
+);
