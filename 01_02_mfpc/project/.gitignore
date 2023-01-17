@@ -1,2 +1,4 @@
 .env
 cert/**
+!cert/.gitkeep
+!cert/server-ext.cnf
