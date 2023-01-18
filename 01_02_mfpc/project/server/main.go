@@ -34,6 +34,8 @@ func main() {
 	}
 	defer appConn.Close()
 
+	defer mvcc.Vacuum(mvccCon, appConn)
+
 	tx, _ := mvcc.OpenTx(ctx, mvccCon, appConn)
 	// user := models.User{}
 	// tx.Select("users", 1, &user.ID, &user.Username)
