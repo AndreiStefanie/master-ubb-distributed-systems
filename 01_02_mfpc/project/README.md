@@ -56,4 +56,4 @@ The concurrency control model is MVCC and is implemented as follows:
 
 ### Deadlocks
 
-While the MVCC model is less prone to deadlocks, they can still occur for write transactions. The system periodically checks the [wait-for](https://en.wikipedia.org/wiki/Wait-for_graph) graph stored in Neo4j. If it finds any deadlock, the system aborts the transaction with the smallest `txid`.
+While the MVCC model is less prone to deadlocks, they can still occur for write transactions. The system periodically checks the [wait-for](https://en.wikipedia.org/wiki/Wait-for_graph) graph stored in Neo4j. If it finds any deadlock, the system aborts the latest transaction (greatest `txid`).
