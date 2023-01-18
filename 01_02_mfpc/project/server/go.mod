@@ -7,4 +7,4 @@ require (
 	google.golang.org/protobuf v1.28.1
 )
 
-require github.com/lib/pq v1.10.7 // indirect
+require github.com/lib/pq v1.10.7

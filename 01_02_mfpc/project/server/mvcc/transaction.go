@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"log"
+	"reflect"
 	"sync"
 )
 
@@ -94,23 +95,31 @@ func (tx *Transaction) Select(table string, id int, data ...any) *Transaction {
 		rows.Scan(row...)
 		base := RecordBase{}
 		for i, col := range cols {
+			sv := reflect.Indirect(reflect.ValueOf(row[i])).Elem()
 			switch col {
 			case "txid_min":
-				base.TxMin = *row[i].(*int)
+				base.TxMin = int(sv.Int())
 			case "txid_max":
-				base.TxMax = *row[i].(*int)
+				base.TxMax = int(sv.Int())
 			case "tx_max_commited":
-				base.TxMaxCommited = row[i].(bool)
+				base.TxMaxCommited = sv.Bool()
 			case "tx_max_rolled_back":
-				base.TxMaxRolledBack = row[i].(bool)
+				base.TxMaxRolledBack = sv.Bool()
 			}
 		}
 
 		// Look for the visible row. The should be only one
 		if tx.isRowVisible(&base) {
 			for i := 0; i < len(data); i++ {
-				// Skip the MVCC columns
-				data[i] = row[i+4]
+				// Skip the MVCC columns (first 4)
+				sv := reflect.Indirect(reflect.ValueOf(row[i+4])).Elem()
+				dv := reflect.Indirect(reflect.ValueOf(data[i]))
+				switch sv.Kind() {
+				case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+					dv.SetInt(sv.Int())
+				case reflect.String:
+					dv.SetString(sv.String())
+				}
 			}
 		}
 	}
