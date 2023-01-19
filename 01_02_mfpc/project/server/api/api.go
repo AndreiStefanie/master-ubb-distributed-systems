@@ -4,6 +4,7 @@ import (
 	context "context"
 	"errors"
 	"strconv"
+	"time"
 
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/01_02_mfpc/project/server/mvcc"
 	"google.golang.org/grpc/metadata"
@@ -49,6 +50,8 @@ func (a *api) List(ctx context.Context, req *ListAccountsRequest) (*ListAccounts
 		return nil, err
 	}
 
+	time.Now().Unix()
+
 	rows, err := a.mvcc.AppConn.QueryContext(ctx, "SELECT * FROM accounts WHERE user_id = $1", userID)
 	if err != nil {
 		return nil, err
@@ -77,6 +80,11 @@ func (a *api) List(ctx context.Context, req *ListAccountsRequest) (*ListAccounts
 }
 
 func (a *api) Deposit(ctx context.Context, req *OperationRequest) (*AccountResponse, error) {
+	userID, err := getUserId(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	tx, err := a.mvcc.OpenTx(ctx)
 	if err != nil {
 		return nil, err
@@ -90,7 +98,14 @@ func (a *api) Deposit(ctx context.Context, req *OperationRequest) (*AccountRespo
 
 	err = tx.Update("accounts", int(req.AccountId), []string{"balance"}, newBalance)
 	if err != nil {
-		tx.Rollback()
+		return nil, err
+	}
+
+	// Artificially slow down the transaction
+	time.Sleep(getDelay(ctx) * time.Second)
+
+	_, err = tx.Insert("audit", []string{"timestamp", "operation", "user_id"}, time.Now().Unix(), "deposit", userID)
+	if err != nil {
 		return nil, err
 	}
 
@@ -124,4 +139,23 @@ func getUserId(ctx context.Context) (int, error) {
 	}
 
 	return userID, nil
+}
+
+func getDelay(ctx context.Context) time.Duration {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return 0
+	}
+
+	values := md.Get("delay")
+	if len(values) == 0 {
+		return 0
+	}
+
+	delay, err := strconv.Atoi(values[0])
+	if err != nil {
+		return 0
+	}
+
+	return time.Duration(delay)
 }

@@ -1,9 +1,14 @@
 package models
 
-import "time"
-
 type AuditEntry struct {
-	Timestamp time.Time
+	ID int
+
+	// The Unix timestamp of when the operation took place
+	Timestamp int64
+
+	// Description of what the user did
 	Operation string
-	UserID    int
+
+	// The user that performed the action
+	UserID int
 }

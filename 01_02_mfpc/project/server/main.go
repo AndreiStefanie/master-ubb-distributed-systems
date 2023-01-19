@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/01_02_mfpc/project/server/api"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/01_02_mfpc/project/server/db"
@@ -20,9 +21,6 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-
-	// ctx, stop := context.WithCancel(context.Background())
-	// defer stop()
 
 	pgUser := os.Getenv("POSTGRESQL_USER")
 	pgPass := os.Getenv("POSTGRESQL_PASSWORD")
@@ -42,31 +40,15 @@ func main() {
 
 	manager := mvcc.CreateManager(mvccCon, appConn)
 
+	// Schedule the Vacuum to run every second
+	ticker := time.NewTicker(10 * time.Second)
+	go func() {
+		for range ticker.C {
+			manager.Vacuum()
+		}
+	}()
+	defer ticker.Stop()
 	defer manager.Vacuum()
-
-	// tx, _ := manager.OpenTx(ctx)
-	// user := models.User{}
-	// tx.Select("users", 1, &user.ID, &user.Username)
-
-	// log.Println(fmt.Sprintf("%+v", user))
-
-	// err = tx.Delete("accounts", 1)
-	// if err != nil {
-	// 	log.Fatalf("%v", err)
-	// }
-	// id, _ := tx.Insert("accounts", []string{"user_id", "balance"}, 1, 100)
-	// tx.Commit()
-
-	// tx, _ = manager.OpenTx(ctx)
-	// tx.Update("accounts", id, []string{"balance"}, 120)
-	// tx.Commit()
-
-	// Open another transaction and try to read the deleted account
-	// tx, _ = mvcc.OpenTx(ctx, mvccCon, appConn)
-	// account := models.Account{}
-	// tx.Select("accounts", 1, &account.ID, &account.UserID, &account.Balance)
-	// log.Println(fmt.Sprintf("%+v", account))
-	// tx.Commit()
 
 	// tlsCredentials, err := loadTLSCredentials()
 	if err != nil {

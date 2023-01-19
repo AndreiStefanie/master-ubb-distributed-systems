@@ -17,10 +17,10 @@ func getTables(conn *sql.DB) ([]string, error) {
 			AND schemaname != 'information_schema'
 			AND tablename != 'schema_migrations';
 	`)
-	defer rows.Close()
 	if err != nil {
 		return []string{}, err
 	}
+	defer rows.Close()
 
 	var tables []string
 	for rows.Next() {
@@ -41,10 +41,10 @@ func vacuum(ctx context.Context, mvccConn *sql.DB, appConn *sql.DB) (int, error)
 	defer stop()
 	// Fetch all active transactions
 	rows, err := mvccConn.QueryContext(ctx, "SELECT * FROM transactions WHERE status = 'active'")
-	defer rows.Close()
 	if err != nil {
 		return 0, err
 	}
+	defer rows.Close()
 
 	var activesTxs []TransactionData
 	for rows.Next() {
@@ -64,10 +64,10 @@ func vacuum(ctx context.Context, mvccConn *sql.DB, appConn *sql.DB) (int, error)
 	delCount := 0
 	for _, table := range tables {
 		rows, err = appConn.QueryContext(ctx, "SELECT tx_min, tx_max, id FROM "+table+" WHERE tx_max != 0 AND tx_max_commited = TRUE OR tx_min_rolled_back = TRUE")
-		defer rows.Close()
 		if err != nil {
 			return 0, err
 		}
+		defer rows.Close()
 
 		for rows.Next() {
 			var txMin, txMax, id int
@@ -93,7 +93,9 @@ func vacuum(ctx context.Context, mvccConn *sql.DB, appConn *sql.DB) (int, error)
 		}
 	}
 
-	log.Printf("Vacuumed %d rows\n", delCount)
+	if delCount > 0 {
+		log.Printf("Vacuumed %d rows\n", delCount)
+	}
 
 	return delCount, nil
 }

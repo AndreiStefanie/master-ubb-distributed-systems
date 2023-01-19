@@ -13,6 +13,11 @@ const userId = process.env.USER_ID || '1';
 const getMetadata = () => {
   const meta = new Metadata();
   meta.set('user-id', userId);
+
+  if (process.env.DELAY) {
+    meta.set('delay', process.env.DELAY);
+  }
+
   return meta;
 };
 

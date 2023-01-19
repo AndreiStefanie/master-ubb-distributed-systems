@@ -82,10 +82,10 @@ func (tx *Transaction) IsRowVisible(row *RecordBase) bool {
 
 func (tx *Transaction) selectRecord(table string, id int, data ...any) (*RecordBase, error) {
 	rows, err := tx.appConn.QueryContext(tx.ctx, "SELECT * FROM "+table+" WHERE id=$1", id)
-	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	base := &RecordBase{}
 	cols, _ := rows.Columns()
@@ -176,10 +176,10 @@ func (tx *Transaction) Insert(table string, fields []string, values ...any) (int
 
 func (tx *Transaction) Update(table string, id int, fields []string, values ...any) error {
 	rows, err := tx.appConn.QueryContext(tx.ctx, "SELECT * FROM "+table+" WHERE id=$1", id)
-	defer rows.Close()
 	if err != nil {
 		return err
 	}
+	defer rows.Close()
 
 	base := &RecordBase{}
 	cols, _ := rows.Columns()
@@ -238,13 +238,11 @@ func (tx *Transaction) Delete(table string, id int) error {
 	// Retrieve the record and ensure it's visible
 	base, err := tx.selectRecord(table, id)
 	if err != nil {
-		log.Printf("Failed to read to record to be deleted for id %d from table %s: %v", id, table, err)
 		return err
 	}
 
 	if !tx.IsRowVisible(base) {
-		log.Printf("No visible record found for id %d from table %s: %v", id, table, err)
-		return err
+		return errors.New(fmt.Sprintf("No visible record found for id %d from table %s", id, table))
 	}
 
 	mu.Lock()
@@ -321,11 +319,14 @@ func (tx *Transaction) Commit() error {
 	return t.Commit()
 }
 
+// Rolls back the transaction. Does nothing if the transcation was successfully commited
 func (tx *Transaction) Rollback() error {
 	if tx.Status == TxCommited {
 		// Transaction was successfully committed
 		return nil
 	}
+
+	log.Printf("Rolling back transaction %v", tx.ID)
 
 	t, err := tx.mvccConn.BeginTx(tx.ctx, nil)
 	if err != nil {
