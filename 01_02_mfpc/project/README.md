@@ -34,6 +34,11 @@ The system will use two database management systems:
 
 The architecture is client-server based on [gRPC](https://grpc.io/). The authentication is based on [TLS certificates](https://grpc.io/docs/guides/auth/#with-server-authentication-ssltls).
 
+### gRPC Setup
+
+- https://grpc.io/docs/languages/go/quickstart/#prerequisites
+- https://github.com/stultuss/protoc-gen-grpc-ts for generating the client (TypeScript) code
+
 ### Server
 
 The server is written in [Go](https://go.dev/) mainly for its [goroutines](https://go.dev/tour/concurrency/1) which enable us to spawn a new lightweight thread for each request. The gRPC server does this out of the box ([link](https://github.com/grpc/grpc-go/blob/master/Documentation/concurrency.md#servers)).

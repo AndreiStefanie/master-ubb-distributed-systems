@@ -5,9 +5,20 @@ import * as grpc from '@grpc/grpc-js';
 import * as neobank_pb from './neobank_pb';
 
 interface IAccountServiceService extends grpc.ServiceDefinition<grpc.UntypedServiceImplementation> {
+  list: IAccountServiceService_IList;
   get: IAccountServiceService_IGet;
   deposit: IAccountServiceService_IDeposit;
   withdraw: IAccountServiceService_IWithdraw;
+}
+
+interface IAccountServiceService_IList extends grpc.MethodDefinition<neobank_pb.ListAccountsRequest, neobank_pb.ListAccountsResponse> {
+  path: '/neobank.AccountService/List'
+  requestStream: false
+  responseStream: false
+  requestSerialize: grpc.serialize<neobank_pb.ListAccountsRequest>;
+  requestDeserialize: grpc.deserialize<neobank_pb.ListAccountsRequest>;
+  responseSerialize: grpc.serialize<neobank_pb.ListAccountsResponse>;
+  responseDeserialize: grpc.deserialize<neobank_pb.ListAccountsResponse>;
 }
 
 interface IAccountServiceService_IGet extends grpc.MethodDefinition<neobank_pb.GetAccountRequest, neobank_pb.AccountResponse> {
@@ -42,12 +53,16 @@ interface IAccountServiceService_IWithdraw extends grpc.MethodDefinition<neobank
 
 export const AccountServiceService: IAccountServiceService;
 export interface IAccountServiceServer extends grpc.UntypedServiceImplementation {
+  list: grpc.handleUnaryCall<neobank_pb.ListAccountsRequest, neobank_pb.ListAccountsResponse>;
   get: grpc.handleUnaryCall<neobank_pb.GetAccountRequest, neobank_pb.AccountResponse>;
   deposit: grpc.handleUnaryCall<neobank_pb.OperationRequest, neobank_pb.AccountResponse>;
   withdraw: grpc.handleUnaryCall<neobank_pb.OperationRequest, neobank_pb.AccountResponse>;
 }
 
 export interface IAccountServiceClient {
+  list(request: neobank_pb.ListAccountsRequest, callback: (error: grpc.ServiceError | null, response: neobank_pb.ListAccountsResponse) => void): grpc.ClientUnaryCall;
+  list(request: neobank_pb.ListAccountsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neobank_pb.ListAccountsResponse) => void): grpc.ClientUnaryCall;
+  list(request: neobank_pb.ListAccountsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neobank_pb.ListAccountsResponse) => void): grpc.ClientUnaryCall;
   get(request: neobank_pb.GetAccountRequest, callback: (error: grpc.ServiceError | null, response: neobank_pb.AccountResponse) => void): grpc.ClientUnaryCall;
   get(request: neobank_pb.GetAccountRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neobank_pb.AccountResponse) => void): grpc.ClientUnaryCall;
   get(request: neobank_pb.GetAccountRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neobank_pb.AccountResponse) => void): grpc.ClientUnaryCall;
@@ -61,6 +76,9 @@ export interface IAccountServiceClient {
 
 export class AccountServiceClient extends grpc.Client implements IAccountServiceClient {
   constructor(address: string, credentials: grpc.ChannelCredentials, options?: Partial<grpc.ClientOptions>);
+  public list(request: neobank_pb.ListAccountsRequest, callback: (error: grpc.ServiceError | null, response: neobank_pb.ListAccountsResponse) => void): grpc.ClientUnaryCall;
+  public list(request: neobank_pb.ListAccountsRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neobank_pb.ListAccountsResponse) => void): grpc.ClientUnaryCall;
+  public list(request: neobank_pb.ListAccountsRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neobank_pb.ListAccountsResponse) => void): grpc.ClientUnaryCall;
   public get(request: neobank_pb.GetAccountRequest, callback: (error: grpc.ServiceError | null, response: neobank_pb.AccountResponse) => void): grpc.ClientUnaryCall;
   public get(request: neobank_pb.GetAccountRequest, metadata: grpc.Metadata, callback: (error: grpc.ServiceError | null, response: neobank_pb.AccountResponse) => void): grpc.ClientUnaryCall;
   public get(request: neobank_pb.GetAccountRequest, metadata: grpc.Metadata, options: Partial<grpc.CallOptions>, callback: (error: grpc.ServiceError | null, response: neobank_pb.AccountResponse) => void): grpc.ClientUnaryCall;

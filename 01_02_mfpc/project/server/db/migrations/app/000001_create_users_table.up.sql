@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS users(
-  txid_min INT NOT NULL,
-  txid_max INT NOT NULL DEFAULT 0,
+  tx_min INT NOT NULL,
+  tx_max INT NOT NULL DEFAULT 0,
   tx_min_commited BOOLEAN NOT NULL DEFAULT FALSE,
   tx_min_rolled_back BOOLEAN NOT NULL DEFAULT FALSE,
   tx_max_commited BOOLEAN NOT NULL DEFAULT FALSE,

@@ -36,7 +36,7 @@ func getTables(conn *sql.DB) ([]string, error) {
 }
 
 // Removes the old, inaccessible versions of the record
-func Vacuum(mvccConn *sql.DB, appConn *sql.DB) (int, error) {
+func vacuum(ctx context.Context, mvccConn *sql.DB, appConn *sql.DB) (int, error) {
 	ctx, stop := context.WithCancel(context.Background())
 	defer stop()
 	// Fetch all active transactions
@@ -63,7 +63,7 @@ func Vacuum(mvccConn *sql.DB, appConn *sql.DB) (int, error) {
 	// Fetch the rows marked for deletion (inserted but rolled back || deletion commited)
 	delCount := 0
 	for _, table := range tables {
-		rows, err = appConn.QueryContext(ctx, "SELECT txid_min, txid_max, id FROM "+table+" WHERE txid_max != 0 AND tx_max_commited = TRUE OR tx_min_rolled_back = TRUE")
+		rows, err = appConn.QueryContext(ctx, "SELECT tx_min, tx_max, id FROM "+table+" WHERE tx_max != 0 AND tx_max_commited = TRUE OR tx_min_rolled_back = TRUE")
 		defer rows.Close()
 		if err != nil {
 			return 0, err
@@ -84,7 +84,7 @@ func Vacuum(mvccConn *sql.DB, appConn *sql.DB) (int, error) {
 			}
 
 			if canBeDeleted {
-				_, err = appConn.ExecContext(ctx, "DELETE FROM "+table+" WHERE txid_min=$1 AND txid_max=$2 AND id=$3", txMin, txMax, id)
+				_, err = appConn.ExecContext(ctx, "DELETE FROM "+table+" WHERE tx_min=$1 AND tx_max=$2 AND id=$3", txMin, txMax, id)
 				if err != nil {
 					return 0, err
 				}

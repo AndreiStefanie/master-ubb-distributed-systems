@@ -97,6 +97,44 @@ export namespace AccountResponse {
   }
 }
 
+export class ListAccountsRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListAccountsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListAccountsRequest): ListAccountsRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ListAccountsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListAccountsRequest;
+  static deserializeBinaryFromReader(message: ListAccountsRequest, reader: jspb.BinaryReader): ListAccountsRequest;
+}
+
+export namespace ListAccountsRequest {
+  export type AsObject = {
+  }
+}
+
+export class ListAccountsResponse extends jspb.Message {
+  clearAccountsList(): void;
+  getAccountsList(): Array<Account>;
+  setAccountsList(value: Array<Account>): void;
+  addAccounts(value?: Account, index?: number): Account;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListAccountsResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: ListAccountsResponse): ListAccountsResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ListAccountsResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListAccountsResponse;
+  static deserializeBinaryFromReader(message: ListAccountsResponse, reader: jspb.BinaryReader): ListAccountsResponse;
+}
+
+export namespace ListAccountsResponse {
+  export type AsObject = {
+    accountsList: Array<Account.AsObject>,
+  }
+}
+
 export class OperationRequest extends jspb.Message {
   getAccountid(): number;
   setAccountid(value: number): void;
