@@ -8,7 +8,7 @@ import (
 
 const (
 	TxActive     = "active"
-	TxCommited   = "commited"
+	TxCommitted  = "committed"
 	TxRolledBack = "rolled_back"
 )
 
@@ -30,7 +30,7 @@ type TransactionData struct {
 	ID int
 	// When the transaction was created
 	CreatedAt time.Time
-	// `active`, `commited`, or `rolled_back`
+	// `active`, `committed`, or `rolled_back`
 	Status string
 }
 
@@ -57,16 +57,16 @@ type RecordBase struct {
 	// Can be set after an UPDATE or DELETE.
 	TxMax int
 
-	// Indicates that the tx_min value is commited.
+	// Indicates that the tx_min value is committed.
 	// This allows other transactions to consider it.
-	TxMinCommited bool
+	TxMinCommitted bool
 
 	// Indicates that the tx_min value was set, but the transaction was rolled back.
 	TxMinRolledBack bool
 
-	// Indicates that the tx_max value is commited.
+	// Indicates that the tx_max value is committed.
 	// This allows other transactions to consider it.
-	TxMaxCommited bool
+	TxMaxCommitted bool
 
 	// Indicates that the tx_max value was set, but the transaction was rolled back.
 	TxMaxRolledBack bool

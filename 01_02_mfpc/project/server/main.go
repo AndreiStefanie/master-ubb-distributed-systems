@@ -48,9 +48,8 @@ func main() {
 		}
 	}()
 	defer ticker.Stop()
-	defer manager.Vacuum()
+	defer manager.Cleanup()
 
-	// tlsCredentials, err := loadTLSCredentials()
 	if err != nil {
 		log.Fatal("cannot load TLS credentials: ", err)
 	}
@@ -63,7 +62,6 @@ func main() {
 	}
 
 	a := api.CreateAPI(manager)
-	// s := grpc.NewServer(grpc.Creds(tlsCredentials))
 	s := grpc.NewServer()
 	api.RegisterAccountServiceServer(s, a)
 

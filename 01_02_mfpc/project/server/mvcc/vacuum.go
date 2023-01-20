@@ -60,10 +60,10 @@ func vacuum(ctx context.Context, mvccConn *sql.DB, appConn *sql.DB) (int, error)
 		return 0, err
 	}
 
-	// Fetch the rows marked for deletion (inserted but rolled back || deletion commited)
+	// Fetch the rows marked for deletion (inserted but rolled back || deletion committed)
 	delCount := 0
 	for _, table := range tables {
-		rows, err = appConn.QueryContext(ctx, "SELECT tx_min, tx_max, id FROM "+table+" WHERE tx_max != 0 AND tx_max_commited = TRUE OR tx_min_rolled_back = TRUE")
+		rows, err = appConn.QueryContext(ctx, "SELECT tx_min, tx_max, id FROM "+table+" WHERE tx_max != 0 AND tx_max_committed = TRUE OR tx_min_rolled_back = TRUE")
 		if err != nil {
 			return 0, err
 		}

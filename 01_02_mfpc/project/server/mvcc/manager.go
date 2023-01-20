@@ -8,6 +8,8 @@ import (
 type Manager struct {
 	mvccConn *sql.DB
 	AppConn  *sql.DB
+
+	transactions []*Transaction
 }
 
 func CreateManager(mvccConn *sql.DB, appConn *sql.DB) *Manager {
@@ -18,7 +20,14 @@ func CreateManager(mvccConn *sql.DB, appConn *sql.DB) *Manager {
 }
 
 func (m *Manager) OpenTx(ctx context.Context) (*Transaction, error) {
-	return openTx(ctx, m.mvccConn, m.AppConn)
+	tx, err := openTx(ctx, m.mvccConn, m.AppConn)
+	if err != nil {
+		return nil, err
+	}
+
+	m.transactions = append(m.transactions, tx)
+
+	return tx, nil
 }
 
 func (m *Manager) Vacuum() (int, error) {
@@ -26,4 +35,13 @@ func (m *Manager) Vacuum() (int, error) {
 	defer stop()
 
 	return vacuum(ctx, m.mvccConn, m.AppConn)
+}
+
+func (m *Manager) Cleanup() {
+	// Commit all still open transactions (the dev didn't call commit/rollback)
+	for _, tx := range m.transactions {
+		tx.Commit()
+	}
+
+	m.Vacuum()
 }

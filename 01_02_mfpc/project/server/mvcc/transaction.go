@@ -59,11 +59,16 @@ func openTx(ctx context.Context, sqlDb *sql.DB, appSql *sql.DB) (*Transaction, e
 
 func (tx *Transaction) IsRowVisible(row *RecordBase) bool {
 	if row.TxMin > tx.ID || row.TxMinRolledBack {
-		// Row created after the current transaction or the insert was rolled back
+		// Row created after the current transaction or the insert was aborted
 		return false
 	}
 
-	if row.TxMax < tx.ID && row.TxMaxCommited {
+	if row.TxMin < tx.ID && !row.TxMinCommitted {
+		// Row created by a concurrent transaction
+		return false
+	}
+
+	if row.TxMax < tx.ID && row.TxMaxCommitted {
 		// Row deleted before the current transaction
 		return false
 	}
@@ -102,18 +107,18 @@ func (tx *Transaction) selectRecord(table string, id int, data ...any) (*RecordB
 				base.TxMin = int(sv.Int())
 			case "tx_max":
 				base.TxMax = int(sv.Int())
-			case "tx_min_commited":
-				base.TxMinCommited = sv.Bool()
+			case "tx_min_committed":
+				base.TxMinCommitted = sv.Bool()
 			case "tx_min_rolled_back":
 				base.TxMinRolledBack = sv.Bool()
-			case "tx_max_commited":
-				base.TxMaxCommited = sv.Bool()
+			case "tx_max_committed":
+				base.TxMaxCommitted = sv.Bool()
 			case "tx_max_rolled_back":
 				base.TxMaxRolledBack = sv.Bool()
 			}
 		}
 
-		// Look for the visible row. There should be only one
+		// Look for the visible row. Pick the last one
 		if tx.IsRowVisible(base) {
 			for i := 0; i < len(data); i++ {
 				// Skip the MVCC columns (first 6)
@@ -126,7 +131,6 @@ func (tx *Transaction) selectRecord(table string, id int, data ...any) (*RecordB
 					dv.SetString(sv.String())
 				}
 			}
-			break
 		}
 	}
 
@@ -156,15 +160,18 @@ func makeRange(min, max int) []string {
 func (tx *Transaction) Insert(table string, fields []string, values ...any) (int, error) {
 	var id int
 	stmt := `INSERT INTO ` + table + ` (`
-	f := append([]string{"tx_min"}, fields...)
+
+	// New rows have the `tx_min` set to the current transaction and
+	// `tx_max_rolled_back` set to true so `tx_max` (which is 0) is ignored
+	f := append([]string{"tx_min", "tx_max", "tx_max_rolled_back"}, fields...)
 	stmt += strings.Join(f, ", ")
 
 	stmt += ") VALUES("
-	r := makeRange(1, len(values)+1)
+	r := makeRange(1, len(values)+3)
 	stmt += strings.Join(r, ", ")
 	stmt += ") RETURNING id"
 
-	err := tx.appConn.QueryRowContext(tx.ctx, stmt, append([]any{tx.ID}, values...)...).Scan(&id)
+	err := tx.appConn.QueryRowContext(tx.ctx, stmt, append([]any{tx.ID, 0, true}, values...)...).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -174,54 +181,53 @@ func (tx *Transaction) Insert(table string, fields []string, values ...any) (int
 	return id, nil
 }
 
+// Update is basically delete, select (considering the tx_max), and insert
 func (tx *Transaction) Update(table string, id int, fields []string, values ...any) error {
-	rows, err := tx.appConn.QueryContext(tx.ctx, "SELECT * FROM "+table+" WHERE id=$1", id)
+	err := tx.Delete(table, id)
+	if err != nil {
+		return err
+	}
+
+	// Select the row that was just marked for deletion (based on `tx_max`).
+	// We need to use Query instead of QueryRow because the latter does not
+	// return the columns so we cannot dynamically retrieve the data.
+	// There should be only one row.
+	rows, err := tx.appConn.QueryContext(tx.ctx, "SELECT * FROM "+table+" WHERE id=$1 AND tx_max=$2", id, tx.ID)
 	if err != nil {
 		return err
 	}
 	defer rows.Close()
 
-	base := &RecordBase{}
 	cols, _ := rows.Columns()
 	row := make([]interface{}, len(cols))
 	for i := range cols {
 		row[i] = new(interface{})
 	}
+
+	rowScanned := false
 	for rows.Next() {
+		// Ensure only one row is actually read
+		if rowScanned {
+			return errors.New("Multiple rows returned during update")
+		}
+		rowScanned = true
+
 		rows.Scan(row...)
-		for i, col := range cols {
-			sv := reflect.Indirect(reflect.ValueOf(row[i])).Elem()
-			switch col {
-			case "tx_min":
-				base.TxMin = int(sv.Int())
-			case "tx_max":
-				base.TxMax = int(sv.Int())
-			case "tx_min_commited":
-				base.TxMinCommited = sv.Bool()
-			case "tx_min_rolled_back":
-				base.TxMinRolledBack = sv.Bool()
-			case "tx_max_commited":
-				base.TxMaxCommited = sv.Bool()
-			case "tx_max_rolled_back":
-				base.TxMaxRolledBack = sv.Bool()
-			}
-		}
 
-		// Look for the visible row. There should be only one
-		if tx.IsRowVisible(base) {
-			// Merge the new values into the row
-			for i, f := range fields {
-				index := slices.Index(cols, f)
-				dv := reflect.Indirect(reflect.ValueOf(row[index]))
-				dv.Set(reflect.ValueOf(values[i]))
-			}
-			break
-		}
-	}
+		// Reset the tx_max fields
+		// `tx_max`
+		dv := reflect.Indirect(reflect.ValueOf(row[1]))
+		dv.Set(reflect.ValueOf(0))
+		// `tx_max_rolled_back`
+		dv = reflect.Indirect(reflect.ValueOf(row[5]))
+		dv.Set(reflect.ValueOf(false))
 
-	err = tx.Delete(table, id)
-	if err != nil {
-		return err
+		// Merge the new values into the row
+		for i, f := range fields {
+			index := slices.Index(cols, f)
+			dv := reflect.Indirect(reflect.ValueOf(row[index]))
+			dv.Set(reflect.ValueOf(values[i]))
+		}
 	}
 
 	cols = cols[6:]
@@ -241,14 +247,19 @@ func (tx *Transaction) Delete(table string, id int) error {
 		return err
 	}
 
+	// Check if the row is visible to the current transaction.
+	// There might be another active transaction
+	// that has already "locked" the row.
 	if !tx.IsRowVisible(base) {
-		return errors.New(fmt.Sprintf("No visible record found for id %d from table %s", id, table))
+		return errors.New(fmt.Sprintf("Transaction %v aborted due to concurrency", tx.ID))
 	}
 
 	mu.Lock()
 	defer mu.Unlock()
 
 	// Look for any existing locks for the table/id combination
+	// TODO: Remove these. If the row is locked, the program would not reach this
+	// since the row is not visible to other (this) transactions
 	var lockId int
 	row := tx.mvccConn.QueryRowContext(tx.ctx, "SELECT id FROM locks WHERE record_table=$1 AND record_id=$2 ", table, id)
 	err = row.Scan(lockId)
@@ -263,8 +274,8 @@ func (tx *Transaction) Delete(table string, id int) error {
 		return err
 	}
 
-	stmt = `UPDATE ` + table + ` SET tx_max = $1 WHERE id = $2;`
-	_, err = tx.appConn.ExecContext(tx.ctx, stmt, tx.ID, id)
+	stmt = `UPDATE ` + table + ` SET tx_max = $1, tx_max_rolled_back = FALSE WHERE tx_min = $2 AND id = $3;`
+	_, err = tx.appConn.ExecContext(tx.ctx, stmt, tx.ID, base.TxMin, id)
 	if err != nil {
 		log.Printf("Failed to mark id %d from table %s for deletion: %v", id, table, err)
 		return err
@@ -287,7 +298,7 @@ func (tx *Transaction) Commit() error {
 		switch r.Operation {
 		case OpDelete:
 			// Commit the MVCC change on the record
-			stmt := `UPDATE ` + r.Table + ` SET tx_max_commited = TRUE WHERE tx_max = $1 AND id = $2;`
+			stmt := `UPDATE ` + r.Table + ` SET tx_max_committed = TRUE WHERE tx_max = $1 AND id = $2;`
 			_, err = tx.appConn.ExecContext(tx.ctx, stmt, tx.ID, r.ID)
 			if err != nil {
 				return err
@@ -301,7 +312,7 @@ func (tx *Transaction) Commit() error {
 			}
 		case OpInsert:
 			// Commit the MVCC change on the record
-			stmt := `UPDATE ` + r.Table + ` SET tx_min_commited = TRUE WHERE tx_min = $1 AND id = $2;`
+			stmt := `UPDATE ` + r.Table + ` SET tx_min_committed = TRUE WHERE tx_min = $1 AND id = $2;`
 			_, err = tx.appConn.ExecContext(tx.ctx, stmt, tx.ID, r.ID)
 			if err != nil {
 				return err
@@ -311,17 +322,19 @@ func (tx *Transaction) Commit() error {
 
 	// Update the transaction entry
 	stmt := `UPDATE transactions SET status = $1 WHERE id = $2;`
-	_, err = tx.mvccConn.ExecContext(tx.ctx, stmt, TxCommited, tx.ID)
+	_, err = tx.mvccConn.ExecContext(tx.ctx, stmt, TxCommitted, tx.ID)
 	if err != nil {
 		return err
 	}
 
+	tx.Status = TxCommitted
+
 	return t.Commit()
 }
 
-// Rolls back the transaction. Does nothing if the transcation was successfully commited
+// Rolls back the transaction. Does nothing if the transcation was successfully committed
 func (tx *Transaction) Rollback() error {
-	if tx.Status == TxCommited {
+	if tx.Status == TxCommitted {
 		// Transaction was successfully committed
 		return nil
 	}

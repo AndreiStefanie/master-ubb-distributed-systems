@@ -41,7 +41,7 @@ export const deposit = (accountId: number, amount: number) => {
 
   accountClient.deposit(req, getMetadata(), (error, res) => {
     if (error) {
-      console.error(error);
+      console.error(error.details);
       process.exit(1);
     }
 

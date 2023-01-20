@@ -64,7 +64,7 @@ func (a *api) List(ctx context.Context, req *ListAccountsRequest) (*ListAccounts
 	for rows.Next() {
 		var account Account
 		var base mvcc.RecordBase
-		rows.Scan(&base.TxMin, &base.TxMax, &base.TxMinCommited, &base.TxMinRolledBack, &base.TxMaxCommited, &base.TxMaxRolledBack, &account.Id, &account.UserId, &account.Balance)
+		rows.Scan(&base.TxMin, &base.TxMax, &base.TxMinCommitted, &base.TxMinRolledBack, &base.TxMaxCommitted, &base.TxMaxRolledBack, &account.Id, &account.UserId, &account.Balance)
 		if tx.IsRowVisible(&base) {
 			res.Accounts = append(res.Accounts, &account)
 			break
@@ -85,18 +85,18 @@ func (a *api) Deposit(ctx context.Context, req *OperationRequest) (*AccountRespo
 		return nil, err
 	}
 
-	tx, err := a.mvcc.OpenTx(ctx)
+	updateTx, err := a.mvcc.OpenTx(ctx)
 	if err != nil {
 		return nil, err
 	}
-	defer tx.Rollback()
+	defer updateTx.Rollback()
 
 	acc := Account{}
-	tx.Select("accounts", int(req.AccountId), &acc.Id, &acc.UserId, &acc.Balance)
+	updateTx.Select("accounts", int(req.AccountId), &acc.Id, &acc.UserId, &acc.Balance)
 
 	newBalance := acc.Balance + req.Amount
 
-	err = tx.Update("accounts", int(req.AccountId), []string{"balance"}, newBalance)
+	err = updateTx.Update("accounts", int(req.AccountId), []string{"balance"}, newBalance)
 	if err != nil {
 		return nil, err
 	}
@@ -104,23 +104,24 @@ func (a *api) Deposit(ctx context.Context, req *OperationRequest) (*AccountRespo
 	// Artificially slow down the transaction
 	time.Sleep(getDelay(ctx) * time.Second)
 
-	_, err = tx.Insert("audit", []string{"timestamp", "operation", "user_id"}, time.Now().Unix(), "deposit", userID)
+	_, err = updateTx.Insert("audit", []string{"timestamp", "operation", "user_id"}, time.Now().Unix(), "deposit", userID)
 	if err != nil {
 		return nil, err
 	}
 
-	err = tx.Commit()
+	err = updateTx.Commit()
 	if err != nil {
 		return nil, err
 	}
 
-	tx, err = a.mvcc.OpenTx(ctx)
+	selectTx, err := a.mvcc.OpenTx(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	acc = Account{}
-	tx.Select("accounts", int(req.AccountId), &acc.Id, &acc.UserId, &acc.Balance)
+	selectTx.Select("accounts", int(req.AccountId), &acc.Id, &acc.UserId, &acc.Balance)
+	selectTx.Commit()
 
 	res := &AccountResponse{Account: &acc}
 
