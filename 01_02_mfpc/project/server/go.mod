@@ -10,6 +10,7 @@ require (
 require github.com/lib/pq v1.10.7
 
 require (
+	github.com/neo4j/neo4j-go-driver/v5 v5.4.0
 	golang.org/x/exp v0.0.0-20230118134722-a68e582fa157
 	google.golang.org/grpc v1.52.0
 )

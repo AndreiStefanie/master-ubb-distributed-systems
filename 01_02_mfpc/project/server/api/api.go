@@ -52,14 +52,12 @@ func (a *api) List(ctx context.Context, req *ListAccountsRequest) (*ListAccounts
 
 	time.Now().Unix()
 
-	rows, err := a.mvcc.AppConn.QueryContext(ctx, "SELECT * FROM accounts WHERE user_id = $1", userID)
+	rows, err := a.mvcc.AppConn.QueryContext(ctx, "SELECT * FROM accounts WHERE user_id = $1 ORDER BY id", userID)
 	if err != nil {
 		return nil, err
 	}
 
-	res := &ListAccountsResponse{
-		Accounts: []*Account{},
-	}
+	res := &ListAccountsResponse{}
 
 	for rows.Next() {
 		var account Account
@@ -67,7 +65,6 @@ func (a *api) List(ctx context.Context, req *ListAccountsRequest) (*ListAccounts
 		rows.Scan(&base.TxMin, &base.TxMax, &base.TxMinCommitted, &base.TxMinRolledBack, &base.TxMaxCommitted, &base.TxMaxRolledBack, &account.Id, &account.UserId, &account.Balance)
 		if tx.IsRowVisible(&base) {
 			res.Accounts = append(res.Accounts, &account)
-			break
 		}
 	}
 

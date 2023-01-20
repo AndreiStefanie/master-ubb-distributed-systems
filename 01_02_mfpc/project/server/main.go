@@ -11,6 +11,7 @@ import (
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/01_02_mfpc/project/server/db"
 	"github.com/AndreiStefanie/master-ubb-distributed-systems/01_02_mfpc/project/server/mvcc"
 	"github.com/joho/godotenv"
+	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
@@ -23,22 +24,29 @@ func main() {
 	}
 
 	pgUser := os.Getenv("POSTGRESQL_USER")
-	pgPass := os.Getenv("POSTGRESQL_PASSWORD")
+	pgPass := os.Getenv("POSTGRESQL_PASS")
 
 	// Initialize the database connections
+	// MVCC Postgres DB
 	mvccCon, err := db.InitConnection(pgUser, pgPass, "mvcc")
 	if err != nil {
 		log.Fatalf("Could not connect to the MVCC database: %v", err)
 	}
 	defer mvccCon.Close()
-
+	// App Postgres DB
 	appConn, err := db.InitConnection(pgUser, pgPass, "neobank")
 	if err != nil {
 		log.Fatalf("Could not connect to the app database: %v", err)
 	}
 	defer appConn.Close()
+	// MVCC Graph DB
+	neoDriver, err := neo4j.NewDriver("bolt://localhost:7687", neo4j.BasicAuth(os.Getenv("NEO4J_USER"), os.Getenv("NEO4J_PASS"), ""))
+	if err != nil {
+		log.Fatalf("Could not connect to neo4j: %v", err)
+	}
+	defer neoDriver.Close()
 
-	manager := mvcc.CreateManager(mvccCon, appConn)
+	manager := mvcc.CreateManager(mvccCon, appConn, neoDriver)
 
 	// Schedule the Vacuum to run every second
 	ticker := time.NewTicker(10 * time.Second)

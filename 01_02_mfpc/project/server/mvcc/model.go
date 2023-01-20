@@ -4,6 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
 const (
@@ -45,6 +47,8 @@ type Transaction struct {
 	mvccConn *sql.DB
 	// The SQL connection for the application database
 	appConn *sql.DB
+	// The Neo4j connection
+	neoConn neo4j.Driver
 	ctx     context.Context
 }
 

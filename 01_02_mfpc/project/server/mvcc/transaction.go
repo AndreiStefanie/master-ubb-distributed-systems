@@ -10,6 +10,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 	"golang.org/x/exp/slices"
 )
 
@@ -28,7 +29,7 @@ func getTx(ctx context.Context, conn *sql.DB, id int) (*TransactionData, error) 
 }
 
 // Open a new database transaction
-func openTx(ctx context.Context, sqlDb *sql.DB, appSql *sql.DB) (*Transaction, error) {
+func openTx(ctx context.Context, sqlDb *sql.DB, appSql *sql.DB, neoConn neo4j.Driver) (*Transaction, error) {
 	// Acquire the mutex to atomically setup the new transaction
 	mu.Lock()
 	defer mu.Unlock()
@@ -49,10 +50,15 @@ func openTx(ctx context.Context, sqlDb *sql.DB, appSql *sql.DB) (*Transaction, e
 		TransactionData: *txData,
 		mvccConn:        sqlDb,
 		appConn:         appSql,
+		neoConn:         neoConn,
 		ctx:             ctx,
 	}
 
-	// TODO: Add the node to the graph
+	err = tx.createTxNode()
+	if err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 
 	return tx, nil
 }
@@ -242,14 +248,14 @@ func (tx *Transaction) Update(table string, id int, fields []string, values ...a
 
 func (tx *Transaction) Delete(table string, id int) error {
 	// Retrieve the record and ensure it's visible
-	base, err := tx.selectRecord(table, id)
+	var base *RecordBase
+	var err error
+
+	base, err = tx.selectRecord(table, id)
 	if err != nil {
 		return err
 	}
 
-	// Check if the row is visible to the current transaction.
-	// There might be another active transaction
-	// that has already "locked" the row.
 	if !tx.IsRowVisible(base) {
 		return errors.New(fmt.Sprintf("Transaction %v aborted due to concurrency", tx.ID))
 	}
@@ -258,7 +264,7 @@ func (tx *Transaction) Delete(table string, id int) error {
 	defer mu.Unlock()
 
 	// Look for any existing locks for the table/id combination
-	// TODO: Remove these. If the row is locked, the program would not reach this
+	// TODO: Remove these. If the row is locked, the program will not reach this
 	// since the row is not visible to other (this) transactions
 	var lockId int
 	row := tx.mvccConn.QueryRowContext(tx.ctx, "SELECT id FROM locks WHERE record_table=$1 AND record_id=$2 ", table, id)
@@ -267,12 +273,16 @@ func (tx *Transaction) Delete(table string, id int) error {
 		return errors.New("Row already locked")
 	}
 
+	tx.addResourceDependency(table, id)
+
 	stmt := `INSERT INTO locks(record_table, record_id, txid) VALUES($1, $2, $3) RETURNING id`
 	err = tx.mvccConn.QueryRowContext(tx.ctx, stmt, table, id, tx.ID).Scan(&lockId)
 	if err != nil {
 		log.Printf("Failed to insert the row lock for id %d from table %s: %v", id, table, err)
 		return err
 	}
+
+	tx.addResourceLock(table, id)
 
 	stmt = `UPDATE ` + table + ` SET tx_max = $1, tx_max_rolled_back = FALSE WHERE tx_min = $2 AND id = $3;`
 	_, err = tx.appConn.ExecContext(tx.ctx, stmt, tx.ID, base.TxMin, id)
@@ -329,6 +339,8 @@ func (tx *Transaction) Commit() error {
 
 	tx.Status = TxCommitted
 
+	// tx.deleteTxNodes()
+
 	return t.Commit()
 }
 
@@ -378,6 +390,10 @@ func (tx *Transaction) Rollback() error {
 	if err != nil {
 		return err
 	}
+
+	tx.Status = TxRolledBack
+
+	// tx.deleteTxNodes()
 
 	return t.Commit()
 }
