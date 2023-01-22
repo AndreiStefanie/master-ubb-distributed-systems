@@ -50,8 +50,6 @@ func (a *api) List(ctx context.Context, req *ListAccountsRequest) (*ListAccounts
 		return nil, err
 	}
 
-	time.Now().Unix()
-
 	rows, err := a.mvcc.AppConn.QueryContext(ctx, "SELECT * FROM accounts WHERE user_id = $1 ORDER BY id", userID)
 	if err != nil {
 		return nil, err
