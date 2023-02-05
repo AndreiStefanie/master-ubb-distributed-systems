@@ -29,7 +29,6 @@ typedef struct ult_t {
   void *(*start_routine)(void *);
   void *arg;
   void *retval;
-  bool waited_for;
 } ult_t;
 
 /**
