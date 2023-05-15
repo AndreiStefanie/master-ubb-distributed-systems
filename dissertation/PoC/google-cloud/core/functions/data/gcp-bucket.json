@@ -1,0 +1,75 @@
+{
+  "asset": {
+    "ancestors": [
+      "projects/790021612593",
+      "folders/1069014828043",
+      "folders/911372712825",
+      "organizations/767123925924"
+    ],
+    "assetType": "storage.googleapis.com/Bucket",
+    "name": "//storage.googleapis.com/sap-rti-bucket-test",
+    "resource": {
+      "data": {
+        "acl": [],
+        "autoclass": {},
+        "billing": {},
+        "cors": [],
+        "defaultObjectAcl": [],
+        "encryption": {},
+        "etag": "CAE=",
+        "iamConfiguration": {
+          "bucketPolicyOnly": {
+            "enabled": true,
+            "lockedTime": "2023-08-12T14:43:48.878Z"
+          },
+          "publicAccessPrevention": "enforced",
+          "uniformBucketLevelAccess": {
+            "enabled": true,
+            "lockedTime": "2023-08-12T14:43:48.878Z"
+          }
+        },
+        "id": "sap-rti-bucket-test",
+        "kind": "storage#bucket",
+        "labels": {},
+        "lifecycle": { "rule": [] },
+        "location": "US",
+        "locationType": "multi-region",
+        "logging": {},
+        "metageneration": 1,
+        "name": "sap-rti-bucket-test",
+        "owner": {},
+        "projectNumber": 790021612593,
+        "retentionPolicy": {},
+        "selfLink": "https://www.googleapis.com/storage/v1/b/sap-rti-bucket-test",
+        "storageClass": "STANDARD",
+        "timeCreated": "2023-05-14T14:43:48.878Z",
+        "updated": "2023-05-14T14:43:48.878Z",
+        "versioning": {},
+        "website": {}
+      },
+      "discoveryDocumentUri": "https://www.googleapis.com/discovery/v1/apis/storage/v1/rest",
+      "discoveryName": "Bucket",
+      "location": "us",
+      "parent": "//cloudresourcemanager.googleapis.com/projects/790021612593",
+      "version": "v1"
+    },
+    "updateTime": "2023-05-14T14:43:48.878Z"
+  },
+  "priorAsset": {
+    "ancestors": [
+      "projects/790021612593",
+      "folders/1069014828043",
+      "folders/911372712825",
+      "organizations/767123925924"
+    ],
+    "assetType": "storage.googleapis.com/Bucket",
+    "name": "//storage.googleapis.com/sap-rti-bucket-test",
+    "resource": {
+      "location": "us",
+      "parent": "//cloudresourcemanager.googleapis.com/projects/790021612593"
+    },
+    "updateTime": "2023-05-14T14:43:22.347Z"
+  },
+  "priorAssetState": "DELETED",
+  "window": { "startTime": "2023-05-14T14:43:48.878Z" }
+}
