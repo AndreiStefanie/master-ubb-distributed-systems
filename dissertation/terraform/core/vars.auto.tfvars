@@ -1,4 +1,4 @@
-google_credentials_path = "/Users/andrei/Documents/Keys/sap-real-time-inventory-core-abdb2ce5a63b.json"
+google_credentials_path = "/Users/andrei/Documents/Keys/sap-rti-terraform.json"
 
 project = "sap-real-time-inventory-core"
 

@@ -1,32 +1,42 @@
 import { setGlobalOptions } from 'firebase-functions/v2';
 import { onMessagePublished } from 'firebase-functions/v2/pubsub';
-import * as logger from 'firebase-functions/logger';
-// import { db, collections } from './firebase';
+import { AssetEvent } from './dtos/asset.dto';
+import { protos } from '@google-cloud/asset';
+import { handleGcpAsset } from './services/collector';
+import { updateInventory } from './services/inventory';
 
 const region = 'europe-central2';
-const inventoryTopic = 'sap-rti-topic-inventory';
 const gcpFeedTopic = 'sap-rti-topic-gcp-feed';
+const inventoryTopic = 'sap-rti-topic-inventory';
 
 setGlobalOptions({
   region,
 });
 
-export const handleAsset = onMessagePublished(
+/**
+ * Function responsible to handle assets as received from Google Cloud integrations.
+ */
+export const googleCloudCollector =
+  onMessagePublished<protos.google.cloud.asset.v1.TemporalAsset>(
+    {
+      topic: gcpFeedTopic,
+      serviceAccount:
+        'collectors@sap-real-time-inventory-core.iam.gserviceaccount.com',
+    },
+    async (event) => {
+      await handleGcpAsset(event.data.message.json);
+    }
+  );
+
+/**
+ * Function responsible to handle new assets provided by the collectors
+ */
+export const handleAsset = onMessagePublished<AssetEvent>(
   { topic: inventoryTopic },
   async (event) => {
-    logger.info(`Received asset ${event.data.message.json}`);
-    // await db.collection(collections.ASSETS).doc('')
-  }
-);
+    const data = event.data.message.json;
 
-export const googleCloudCollector = onMessagePublished(
-  {
-    topic: gcpFeedTopic,
-    serviceAccount:
-      'collectors@sap-real-time-inventory-core.iam.gserviceaccount.com',
-  },
-  async (event) => {
-    logger.info(`Received asset ${JSON.stringify(event.data.message.json)}`);
-    // await db.collection(collections.ASSETS).doc('')
+    // Store the current state of the asset as the main document and add the version
+    await updateInventory(data);
   }
 );

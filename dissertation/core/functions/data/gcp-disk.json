@@ -1,0 +1,96 @@
+{
+  "asset": {
+    "ancestors": [
+      "projects/790021612593",
+      "folders/1069014828043",
+      "folders/911372712825",
+      "organizations/767123925924"
+    ],
+    "assetType": "compute.googleapis.com/Disk",
+    "name": "//compute.googleapis.com/projects/sap-real-time-inventory/zones/europe-west1-b/disks/instance-1",
+    "resource": {
+      "data": {
+        "architecture": "X86_64",
+        "creationTimestamp": "2023-05-16T08:11:15.373-07:00",
+        "guestOsFeatures": [
+          { "type": "UEFI_COMPATIBLE" },
+          { "type": "VIRTIO_SCSI_MULTIQUEUE" },
+          { "type": "GVNIC" }
+        ],
+        "id": "2532784265315099646",
+        "labelFingerprint": "42WmSpB8rSM=",
+        "lastAttachTimestamp": "2023-05-16T08:11:15.374-07:00",
+        "licenseCodes": ["3853522013536123851"],
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+        ],
+        "name": "instance-1",
+        "physicalBlockSizeBytes": "4096",
+        "selfLink": "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/zones/europe-west1-b/disks/instance-1",
+        "sizeGb": "10",
+        "sourceImage": "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-11-bullseye-v20230509",
+        "sourceImageId": "8041024928460795508",
+        "status": "READY",
+        "type": "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/zones/europe-west1-b/diskTypes/pd-balanced",
+        "users": [
+          "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/zones/europe-west1-b/instances/instance-1"
+        ],
+        "zone": "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/zones/europe-west1-b"
+      },
+      "discoveryDocumentUri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest",
+      "discoveryName": "Disk",
+      "location": "europe-west1-b",
+      "parent": "//cloudresourcemanager.googleapis.com/projects/790021612593",
+      "version": "v1"
+    },
+    "updateTime": "2023-05-16T15:11:22.443943Z"
+  },
+  "priorAsset": {
+    "ancestors": [
+      "projects/790021612593",
+      "folders/1069014828043",
+      "folders/911372712825",
+      "organizations/767123925924"
+    ],
+    "assetType": "compute.googleapis.com/Disk",
+    "name": "//compute.googleapis.com/projects/sap-real-time-inventory/zones/europe-west1-b/disks/instance-1",
+    "resource": {
+      "data": {
+        "architecture": "X86_64",
+        "creationTimestamp": "2023-05-16T08:11:15.373-07:00",
+        "guestOsFeatures": [
+          { "type": "UEFI_COMPATIBLE" },
+          { "type": "VIRTIO_SCSI_MULTIQUEUE" },
+          { "type": "GVNIC" }
+        ],
+        "id": "2532784265315099646",
+        "labelFingerprint": "42WmSpB8rSM=",
+        "lastAttachTimestamp": "2023-05-16T08:11:15.374-07:00",
+        "licenseCodes": ["3853522013536123851"],
+        "licenses": [
+          "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/licenses/debian-11-bullseye"
+        ],
+        "name": "instance-1",
+        "physicalBlockSizeBytes": "4096",
+        "selfLink": "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/zones/europe-west1-b/disks/instance-1",
+        "sizeGb": "10",
+        "sourceImage": "https://www.googleapis.com/compute/v1/projects/debian-cloud/global/images/debian-11-bullseye-v20230509",
+        "sourceImageId": "8041024928460795508",
+        "status": "CREATING",
+        "type": "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/zones/europe-west1-b/diskTypes/pd-balanced",
+        "users": [
+          "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/zones/europe-west1-b/instances/instance-1"
+        ],
+        "zone": "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/zones/europe-west1-b"
+      },
+      "discoveryDocumentUri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest",
+      "discoveryName": "Disk",
+      "location": "europe-west1-b",
+      "parent": "//cloudresourcemanager.googleapis.com/projects/790021612593",
+      "version": "v1"
+    },
+    "updateTime": "2023-05-16T15:11:16.529938Z"
+  },
+  "priorAssetState": "PRESENT",
+  "window": { "startTime": "2023-05-16T15:11:22.443943Z" }
+}

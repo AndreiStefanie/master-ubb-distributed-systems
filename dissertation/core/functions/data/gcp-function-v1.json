@@ -1,0 +1,44 @@
+{
+  "asset": {
+    "ancestors": [
+      "projects/790021612593",
+      "folders/1069014828043",
+      "folders/911372712825",
+      "organizations/767123925924"
+    ],
+    "assetType": "cloudfunctions.googleapis.com/CloudFunction",
+    "name": "//cloudfunctions.googleapis.com/projects/sap-real-time-inventory/locations/europe-west1/functions/function-1",
+    "resource": {
+      "data": {
+        "availableMemoryMb": 256,
+        "buildId": "9b98ebad-29fe-4c4b-9004-74c1da1a28eb",
+        "buildName": "projects/790021612593/locations/europe-west1/builds/9b98ebad-29fe-4c4b-9004-74c1da1a28eb",
+        "dockerRegistry": "CONTAINER_REGISTRY",
+        "entryPoint": "helloWorld",
+        "httpsTrigger": {
+          "securityLevel": "SECURE_ALWAYS",
+          "url": "https://europe-west1-sap-real-time-inventory.cloudfunctions.net/function-1"
+        },
+        "ingressSettings": "ALLOW_ALL",
+        "labels": { "deployment-tool": "console-cloud" },
+        "maxInstances": 3000,
+        "name": "projects/sap-real-time-inventory/locations/europe-west1/functions/function-1",
+        "runtime": "nodejs18",
+        "serviceAccountEmail": "sap-real-time-inventory@appspot.gserviceaccount.com",
+        "sourceUploadUrl": "https://storage.googleapis.com/uploads-554303075111.europe-west1.cloudfunctions.appspot.com/d5e17519-cfdd-4ead-b1f7-11db97e2a23d.zip",
+        "status": "ACTIVE",
+        "timeout": "60s",
+        "updateTime": "2023-05-16T14:53:34.857Z",
+        "versionId": "1"
+      },
+      "discoveryDocumentUri": "https://cloudfunctions.googleapis.com/$discovery/rest",
+      "discoveryName": "CloudFunction",
+      "location": "europe-west1",
+      "parent": "//cloudresourcemanager.googleapis.com/projects/790021612593",
+      "version": "v1"
+    },
+    "updateTime": "2023-05-16T14:53:36.277726Z"
+  },
+  "priorAssetState": "DOES_NOT_EXIST",
+  "window": { "startTime": "2023-05-16T14:53:36.277726Z" }
+}

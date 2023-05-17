@@ -1,0 +1,37 @@
+{
+  "asset": {
+    "ancestors": [
+      "projects/790021612593",
+      "folders/1069014828043",
+      "folders/911372712825",
+      "organizations/767123925924"
+    ],
+    "assetType": "compute.googleapis.com/Firewall",
+    "name": "//compute.googleapis.com/projects/sap-real-time-inventory/global/firewalls/default-allow-https",
+    "resource": {
+      "data": {
+        "allowed": [{ "IPProtocol": "tcp", "ports": ["443"] }],
+        "creationTimestamp": "2023-05-16T08:11:27.934-07:00",
+        "description": "",
+        "direction": "INGRESS",
+        "disabled": false,
+        "id": "2017117907503162352",
+        "logConfig": { "enable": false },
+        "name": "default-allow-https",
+        "network": "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/global/networks/default",
+        "priority": 1000,
+        "selfLink": "https://www.googleapis.com/compute/v1/projects/sap-real-time-inventory/global/firewalls/default-allow-https",
+        "sourceRanges": ["0.0.0.0/0"],
+        "targetTags": ["https-server"]
+      },
+      "discoveryDocumentUri": "https://www.googleapis.com/discovery/v1/apis/compute/v1/rest",
+      "discoveryName": "Firewall",
+      "location": "global",
+      "parent": "//cloudresourcemanager.googleapis.com/projects/790021612593",
+      "version": "v1"
+    },
+    "updateTime": "2023-05-16T15:11:28.059518Z"
+  },
+  "priorAssetState": "DOES_NOT_EXIST",
+  "window": { "startTime": "2023-05-16T15:11:28.059518Z" }
+}
