@@ -31,7 +31,12 @@ export interface Asset {
   /**
    * RTI-specific version (date)
    */
-  version: Date;
+  version: string;
+
+  /**
+   * When the last change was performed
+   */
+  changeTime: Date;
 
   /**
    * The URL to open the asset in the provider portal.

@@ -10,4 +10,5 @@ export const increment = FieldValue.increment;
 export const collections = {
   ASSETS: 'assets',
   ASSET_VERSIONS: 'versions',
+  STATS: 'stats',
 };

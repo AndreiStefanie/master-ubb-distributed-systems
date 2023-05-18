@@ -2,6 +2,7 @@ import { protos } from '@google-cloud/asset';
 import { providers } from './common';
 import { Operation } from './dtos/asset.dto';
 import { Asset } from './models/asset.model';
+import { Timestamp } from 'firebase-admin/firestore';
 
 export const mapGCPToRTIAsset = (
   source: protos.google.cloud.asset.v1.TemporalAsset
@@ -21,16 +22,15 @@ export const mapGCPToRTIAsset = (
     name: getAssetName(source),
     providerUrl: '',
     region: gcpAsset.resource?.location || '',
-    type: gcpAsset.assetType || '',
-    version: gcpAsset.updateTime
-      ? new Date(gcpAsset.updateTime as string)
-      : new Date(Date.now()),
+    type: gcpAsset.assetType!,
+    version: gcpAsset.updateTime as string,
+    changeTime: getDate(gcpAsset.updateTime as string),
     deleted: source.deleted || false,
     source: gcpAsset.resource.data,
   };
 };
 
-export const getAssetId = (
+const getAssetId = (
   source: protos.google.cloud.asset.v1.TemporalAsset
 ): string =>
   //@ts-ignore
@@ -38,9 +38,7 @@ export const getAssetId = (
   //@ts-ignore
   source.priorAsset?.resource?.data?.id;
 
-export const getAssetName = (
-  source: protos.google.cloud.asset.v1.TemporalAsset
-) =>
+const getAssetName = (source: protos.google.cloud.asset.v1.TemporalAsset) =>
   //@ts-ignore
   source.asset?.resource?.data?.name ||
   //@ts-ignore
@@ -60,6 +58,9 @@ const getIntegrationId = (
 
   return project.split('/')[1];
 };
+
+const getDate = (dateString: string): Date =>
+  Timestamp.fromDate(new Date(dateString)).toDate();
 
 /**
  * Deduce and return the operation based on the prior state and other fields
