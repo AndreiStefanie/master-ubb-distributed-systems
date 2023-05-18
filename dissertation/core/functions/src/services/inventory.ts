@@ -1,6 +1,6 @@
 import { logger } from 'firebase-functions/v2';
 import { AssetEvent, Operation } from '../dtos/asset.dto';
-import { collections, db } from '../firebase';
+import { collections, db } from '../firestore';
 import { StatsEntry } from '../models/stats.model';
 import { Timestamp } from 'firebase-admin/firestore';
 
