@@ -1,5 +1,3 @@
-import { Integration } from './integration.model';
-
 export interface Asset {
   /**
    * The ID of the asset/resource given by the provider
@@ -52,4 +50,9 @@ export interface Asset {
    * The data as received from the provider.
    */
   source: any;
+}
+
+export interface Integration {
+  id: string;
+  provider: string;
 }
