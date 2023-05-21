@@ -1,7 +1,7 @@
 import { protos } from '@google-cloud/asset';
-import { providers } from './common';
-import { Operation } from './dtos/asset.dto';
-import { Asset } from './models/asset.model';
+import { providers } from '../common';
+import { Operation } from '../dtos/asset.dto';
+import { Asset } from '../models/asset.model';
 import { Timestamp } from 'firebase-admin/firestore';
 
 export const mapGCPToRTIAsset = (

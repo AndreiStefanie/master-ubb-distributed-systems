@@ -2,8 +2,8 @@ import { protos } from '@google-cloud/asset';
 import { listen } from './clients/pubsub';
 import { AssetEvent } from './dtos/asset.dto';
 import { updateInventory } from './services/inventory';
-import { handleGcpAsset } from './services/collector';
-import { db } from './firestore';
+import { handleGcpAsset } from './gcp/collector';
+import { db } from './clients/firestore';
 
 db.settings({ host: 'localhost', ssl: false, port: 8080 });
 

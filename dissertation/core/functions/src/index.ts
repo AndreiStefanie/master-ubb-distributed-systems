@@ -2,7 +2,7 @@ import { setGlobalOptions } from 'firebase-functions/v2';
 import { onMessagePublished } from 'firebase-functions/v2/pubsub';
 import { AssetEvent } from './dtos/asset.dto';
 import { protos } from '@google-cloud/asset';
-import { handleGcpAsset } from './services/collector';
+import { handleGcpAsset } from './gcp/collector';
 import { updateInventory } from './services/inventory';
 
 const region = 'europe-central2';

@@ -1,5 +1,5 @@
 import { protos } from '@google-cloud/asset';
-import { getOperation, mapGCPToRTIAsset } from '../gcp.mapper';
+import { getOperation, mapGCPToRTIAsset } from './gcp.mapper';
 import { logger } from 'firebase-functions/v2';
 import { AssetEvent } from '../dtos/asset.dto';
 import { inventoryTopic, pubSubClient } from '../clients/pubsub';
