@@ -2,11 +2,7 @@ google_credentials_path = "/Users/andrei/Documents/Keys/sap-rti-terraform.json"
 
 project = "sap-real-time-inventory-core"
 
-integrations_aws = {
-  "caa" = {
-    account_id = "201157465182"
-  }
-}
+rti_aws_account = "026709880083"
 
 integrations_azure = {
   "cyscale" = {
@@ -20,3 +16,9 @@ integrations_gcp = {
     project_number = "790021612593"
   }
 }
+
+aws_accounts = ["201157465182"]
+
+aws_region = "eu-west-1"
+
+lambda_src_path = "/Users/andrei/Projects/master-ubb-distributed-systems/dissertation/collector-aws/.aws-sam/build/AWSCollectorFunction"

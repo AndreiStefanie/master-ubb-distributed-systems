@@ -7,10 +7,20 @@ variable "project" {
   type = string
 }
 
-variable "integrations_aws" {
+variable "rti_aws_account" {
+  type = string
+}
+
+variable "integrations_gcp" {
   type = map(object({
-    account_id = string
+    project_id     = string
+    project_number = string
   }))
+}
+
+variable "aws_accounts" {
+  type        = set(string)
+  description = "The monitored AWS accounts"
 }
 
 variable "integrations_azure" {
@@ -19,9 +29,11 @@ variable "integrations_azure" {
   }))
 }
 
-variable "integrations_gcp" {
-  type = map(object({
-    project_id     = string
-    project_number = string
-  }))
+variable "aws_region" {
+  type = string
+}
+
+variable "lambda_src_path" {
+  type        = string
+  description = "The directory containing the compiled code for the AWS integration Lambda"
 }

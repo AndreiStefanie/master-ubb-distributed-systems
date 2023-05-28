@@ -4,12 +4,26 @@ terraform {
       source  = "hashicorp/google"
       version = "4.64.0"
     }
+
+    aws = {
+      source  = "hashicorp/aws"
+      version = "4.67.0"
+    }
   }
 }
 
 provider "google" {
   credentials = var.google_credentials_path
   project     = var.project
+}
+
+provider "aws" {
+  region              = var.aws_region
+  allowed_account_ids = [var.rti_aws_account]
+}
+
+locals {
+  aws_integration_role = "RealTimeInventory"
 }
 
 # Workload Identity setup for cross-provider access
@@ -21,19 +35,17 @@ resource "google_iam_workload_identity_pool" "this" {
 }
 
 resource "google_iam_workload_identity_pool_provider" "aws" {
-  for_each = var.integrations_aws
-
   workload_identity_pool_id          = google_iam_workload_identity_pool.this.workload_identity_pool_id
-  workload_identity_pool_provider_id = "sap-aws-${each.key}"
-  display_name                       = "AWS ${each.key}"
-  description                        = "Identity provider for AWS account ${each.value.account_id}"
-  attribute_condition                = "assertion.arn.startsWith('arn:aws:sts::${each.value.account_id}:assumed-role/RealTimeInventory')"
+  workload_identity_pool_provider_id = "sap-aws-rti"
+  display_name                       = "AWS RTI Identity"
+  description                        = "Identity provider for AWS account ${var.rti_aws_account}"
+  attribute_condition                = "assertion.arn.startsWith('arn:aws:sts::${var.rti_aws_account}:assumed-role/${local.aws_integration_role}')"
   attribute_mapping = {
     "google.subject"        = "assertion.arn"
     "attribute.aws_account" = "assertion.account"
   }
   aws {
-    account_id = each.value.account_id
+    account_id = var.rti_aws_account
   }
 }
 
@@ -64,19 +76,6 @@ resource "google_service_account_iam_binding" "impersonation" {
   members = [
     "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.this.name}/*",
   ]
-}
-
-# Setup for Google Cloud integrations
-resource "google_pubsub_topic" "gcp_feed" {
-  name = "sap-rti-topic-gcp-feed"
-}
-
-resource "google_pubsub_topic_iam_member" "gcp" {
-  for_each = var.integrations_gcp
-
-  topic  = google_pubsub_topic.gcp_feed.name
-  role   = "roles/pubsub.publisher"
-  member = "serviceAccount:service-${each.value.project_number}@gcp-sa-cloudasset.iam.gserviceaccount.com"
 }
 
 # Core infrastructure setup
