@@ -26,7 +26,7 @@ describe('Unit tests for AWS collector handler', function () {
         region: 'eu-west-1',
         source: testEvent.detail.configurationItem,
         type: 'AWS::S3::Bucket',
-        version: '1.3',
+        version: '2023-05-28T11:27:21.732Z',
       },
     };
 

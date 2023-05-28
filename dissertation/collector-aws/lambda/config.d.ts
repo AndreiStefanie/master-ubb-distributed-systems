@@ -4,7 +4,7 @@ export interface Detail {
   recordVersion: string;
   messageType: string;
   configurationItemDiff?: ConfigurationItemDiff;
-  notificationCreationTime: Date;
+  notificationCreationTime: string;
   configurationItem?: ConfigurationItem;
 }
 
@@ -30,7 +30,7 @@ export interface ConfigurationItem {
   supplementaryConfiguration: SupplementaryConfiguration;
   tags: Tags;
   configurationItemVersion: string;
-  configurationItemCaptureTime: Date;
+  configurationItemCaptureTime: string;
   configurationStateId: number;
   awsAccountId: string;
   configurationItemStatus: string;

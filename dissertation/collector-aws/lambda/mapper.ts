@@ -19,7 +19,7 @@ export const mapAWSToRTIAsset = (detail: Detail): AssetEvent => {
     region: detail.configurationItem.awsRegion!,
     source: detail.configurationItem,
     type: detail.configurationItem.resourceType!,
-    version: detail.recordVersion,
+    version: detail.configurationItem.configurationItemCaptureTime!,
   };
 
   return {
