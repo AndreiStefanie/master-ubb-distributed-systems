@@ -9,6 +9,16 @@ terraform {
       source  = "hashicorp/aws"
       version = "4.67.0"
     }
+
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "2.39.0"
+    }
+
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "3.58.0"
+    }
   }
 }
 
@@ -20,6 +30,17 @@ provider "google" {
 provider "aws" {
   region              = var.aws_region
   allowed_account_ids = [var.rti_aws_account]
+}
+
+provider "azuread" {
+  tenant_id = var.rti_azure_tenant
+}
+
+provider "azurerm" {
+  subscription_id = var.rti_azure_subscription
+  tenant_id       = var.rti_azure_tenant
+
+  features {}
 }
 
 locals {
@@ -39,28 +60,34 @@ resource "google_iam_workload_identity_pool_provider" "aws" {
   workload_identity_pool_provider_id = "sap-aws-rti"
   display_name                       = "AWS RTI Identity"
   description                        = "Identity provider for AWS account ${var.rti_aws_account}"
-  attribute_condition                = "assertion.arn.startsWith('arn:aws:sts::${var.rti_aws_account}:assumed-role/${local.aws_integration_role}')"
+
   attribute_mapping = {
     "google.subject"        = "assertion.arn"
     "attribute.aws_account" = "assertion.account"
   }
+
+  attribute_condition = "assertion.arn.startsWith('arn:aws:sts::${var.rti_aws_account}:assumed-role/${local.aws_integration_role}')"
+
   aws {
     account_id = var.rti_aws_account
   }
 }
 
 resource "google_iam_workload_identity_pool_provider" "azure" {
-  for_each = var.integrations_azure
-
   workload_identity_pool_id          = google_iam_workload_identity_pool.this.workload_identity_pool_id
-  workload_identity_pool_provider_id = "sap-az-${each.key}"
-  display_name                       = "Azure ${each.key}"
-  description                        = "Identity provider for Azure tenand ${each.value.tenand_id}"
+  workload_identity_pool_provider_id = "sap-azure-rti"
+  display_name                       = "Azure RTI Identity"
+  description                        = "Identity provider for Azure tenant ${var.rti_azure_tenant}"
+
   attribute_mapping = {
     "google.subject" = "assertion.sub"
   }
+
+  attribute_condition = "assertion.sub == '${azurerm_user_assigned_identity.this.principal_id}'"
+
   oidc {
-    issuer_uri = "https://sts.windows.net/${each.value.tenand_id}"
+    issuer_uri        = "https://sts.windows.net/${var.rti_azure_tenant}"
+    allowed_audiences = azuread_application.this.identifier_uris
   }
 }
 

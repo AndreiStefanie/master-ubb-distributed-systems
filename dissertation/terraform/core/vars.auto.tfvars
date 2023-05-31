@@ -2,13 +2,9 @@ google_credentials_path = "/Users/andrei/Documents/Keys/sap-rti-terraform.json"
 
 project = "sap-real-time-inventory-core"
 
-rti_aws_account = "026709880083"
-
-integrations_azure = {
-  "cyscale" = {
-    tenand_id = "0982f0f2-e325-49dd-93e1-cf43c4f0e590"
-  }
-}
+rti_aws_account        = "026709880083"
+rti_azure_subscription = "ced525b8-ae72-4ebe-b640-45c46e4f7d15"
+rti_azure_tenant       = "0d5964ac-4c8f-4916-8325-8956793a5be4"
 
 integrations_gcp = {
   "test" = {

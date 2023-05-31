@@ -11,6 +11,14 @@ variable "rti_aws_account" {
   type = string
 }
 
+variable "rti_azure_tenant" {
+  type = string
+}
+
+variable "rti_azure_subscription" {
+  type = string
+}
+
 variable "integrations_gcp" {
   type = map(object({
     project_id     = string
@@ -21,12 +29,6 @@ variable "integrations_gcp" {
 variable "aws_accounts" {
   type        = set(string)
   description = "The monitored AWS accounts"
-}
-
-variable "integrations_azure" {
-  type = map(object({
-    tenand_id = string
-  }))
 }
 
 variable "aws_region" {
