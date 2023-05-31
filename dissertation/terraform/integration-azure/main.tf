@@ -39,7 +39,6 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "this" {
   system_topic        = azurerm_eventgrid_system_topic.this.name
   resource_group_name = azurerm_resource_group.this.name
 
-  event_delivery_schema = "CloudEventSchemaV1_0"
   included_event_types = [
     "Microsoft.Resources.ResourceWriteSuccess",
     "Microsoft.Resources.ResourceDeleteSuccess",
