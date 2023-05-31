@@ -5,7 +5,9 @@ import { StatsEntry } from '../models/stats.model';
 import { Timestamp } from 'firebase-admin/firestore';
 
 export const updateInventory = async (data: AssetEvent) => {
-  const ref = db.collection(collections.ASSETS).doc(data.asset.id);
+  const ref = db
+    .collection(collections.ASSETS)
+    .doc(encodeURIComponent(data.asset.id));
   try {
     if (data.operation === Operation.DELETE) {
       // Only update the deleted and the version fields in case the asset was deleted
