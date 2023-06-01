@@ -51,7 +51,6 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "this" {
       values = [
         "/providers/Microsoft.Storage/storageAccounts/",
         "/providers/Microsoft.Compute/virtualMachines/",
-        "/providers/Microsoft.Web/sites/"
       ]
     }
   }
