@@ -11,4 +11,5 @@ export const collections = {
   ASSETS: 'assets',
   ASSET_VERSIONS: 'versions',
   STATS: 'stats',
+  INCOMPLETE_ASSETS: 'incomplete_assets',
 };

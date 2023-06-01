@@ -15,7 +15,6 @@ export const mapAWSToRTIAsset = (detail: Detail): AssetEvent => {
     changeTime: new Date(detail.configurationItem.configurationItemCaptureTime!),
     deleted: detail.configurationItemDiff?.changeType === 'DELETE',
     name: (detail.configurationItem.resourceName || detail.configurationItem.resourceId)!,
-    providerUrl: '',
     region: detail.configurationItem.awsRegion!,
     source: detail.configurationItem,
     type: detail.configurationItem.resourceType!,

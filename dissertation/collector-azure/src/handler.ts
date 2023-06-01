@@ -19,6 +19,10 @@ export const handleResourceEvent = async (
       operation: Operation.DELETE,
       asset: {
         id: event.resourceUri,
+        integration: {
+          id: event.subscriptionId,
+          provider: 'azure',
+        },
         deleted: true,
         version: eventTime,
       },
@@ -58,7 +62,6 @@ const mapAzureResourceToRTIAsset = (
   changeTime: new Date(eventTime),
   deleted: false,
   name: resource.name,
-  providerUrl: '',
   region: resource.location,
   source: resource,
   type: resource.type,

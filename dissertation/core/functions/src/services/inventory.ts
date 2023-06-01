@@ -3,12 +3,32 @@ import { AssetEvent, Operation } from '../dtos/asset.dto';
 import { collections, db } from '../clients/firestore';
 import { StatsEntry } from '../models/stats.model';
 import { Timestamp } from 'firebase-admin/firestore';
+import { validateAssetEvent } from '../validator';
+import { ValidationError } from 'yup';
 
 export const updateInventory = async (data: AssetEvent) => {
-  const ref = db
-    .collection(collections.ASSETS)
-    .doc(encodeURIComponent(data.asset.id));
   try {
+    await validateAssetEvent(data);
+  } catch (error) {
+    // If the validation fails, store the asset in a separate collection
+    // for future inspection.
+    if (error instanceof ValidationError) {
+      console.warn(error.errors);
+      await db
+        .collection(collections.INCOMPLETE_ASSETS)
+        .add({ ...data, validationErrors: error.errors });
+      return;
+    } else {
+      console.error(error.message);
+      return;
+    }
+  }
+
+  try {
+    const ref = db
+      .collection(collections.ASSETS)
+      .doc(encodeURIComponent(data.asset.id));
+
     if (data.operation === Operation.DELETE) {
       // Only update the deleted and the version fields in case the asset was deleted
       const doc = await ref.get();
@@ -19,7 +39,9 @@ export const updateInventory = async (data: AssetEvent) => {
         );
       } else {
         logger.info(
-          `Untracked asset ${data.asset.name} was deleted from the provider`
+          `Untracked asset ${
+            data.asset.name || data.asset.id
+          } was deleted from ${data.asset.integration.provider}`
         );
       }
     } else {

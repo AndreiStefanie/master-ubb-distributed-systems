@@ -50,7 +50,7 @@ export interface Asset {
   /**
    * The URL to open the asset in the provider portal.
    */
-  providerUrl: string;
+  // providerUrl: string;
 
   /**
    * Whether the asset was deleted from the provider.
