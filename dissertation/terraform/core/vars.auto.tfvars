@@ -13,8 +13,7 @@ integrations_gcp = {
   }
 }
 
-aws_accounts = ["201157465182"]
-
-aws_region = "eu-west-1"
+monitored_aws_accounts = ["201157465182"]
+aws_region             = "eu-west-1"
 
 lambda_src_path = "/Users/andrei/Projects/master-ubb-distributed-systems/dissertation/collector-aws/.aws-sam/build/AWSCollectorFunction"

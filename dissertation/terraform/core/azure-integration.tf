@@ -1,13 +1,30 @@
 # App Registration
+resource "random_uuid" "app_role_id" {}
+
+data "azurerm_subscription" "this" {}
+
+locals {
+  resource_uri = "api://real-time-inventory"
+}
+
 resource "azuread_application" "this" {
   display_name    = "RealTimeInventory"
-  identifier_uris = ["api://real-time-inventory"]
+  identifier_uris = [local.resource_uri]
+
+  app_role {
+    allowed_member_types = ["Application"]
+    display_name         = "Collector"
+    description          = "Role for pushing the Azure assets"
+    enabled              = true
+    id                   = random_uuid.app_role_id.result
+    value                = "collector"
+  }
 }
 
 resource "azuread_service_principal" "this" {
-  application_id = azuread_application.this.application_id
-  description    = "Service principal for Real-Time Inventory integration"
-  # app_role_assignment_required = true # TODO
+  application_id               = azuread_application.this.application_id
+  description                  = "Service principal for Real-Time Inventory integration"
+  app_role_assignment_required = true
 }
 
 resource "azurerm_resource_group" "this" {
@@ -21,6 +38,18 @@ resource "azurerm_user_assigned_identity" "this" {
   resource_group_name = azurerm_resource_group.this.name
 }
 
+resource "azuread_app_role_assignment" "this" {
+  app_role_id         = random_uuid.app_role_id.result
+  principal_object_id = azurerm_user_assigned_identity.this.principal_id
+  resource_object_id  = azuread_service_principal.this.object_id
+}
+
+resource "azurerm_role_assignment" "resource_reader" {
+  role_definition_name = "Reader"
+  scope                = data.azurerm_subscription.this.id
+  principal_id         = azurerm_user_assigned_identity.this.principal_id
+}
+
 resource "azurerm_storage_account" "this" {
   name                     = "stsaprtifunctions"
   resource_group_name      = azurerm_resource_group.this.name
@@ -30,10 +59,17 @@ resource "azurerm_storage_account" "this" {
 
 }
 
-resource "azurerm_role_assignment" "this" {
+resource "azurerm_role_assignment" "storage_access" {
   role_definition_name = "Storage Account Contributor"
   scope                = azurerm_storage_account.this.id
   principal_id         = azurerm_user_assigned_identity.this.principal_id
+}
+
+resource "azurerm_application_insights" "this" {
+  name                = "ai-sap-rti-functions"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  application_type    = "Node.JS"
 }
 
 resource "azurerm_service_plan" "this" {
@@ -57,6 +93,9 @@ resource "azurerm_linux_function_app" "this" {
     application_stack {
       node_version = 18
     }
+
+    application_insights_connection_string = azurerm_application_insights.this.connection_string
+    application_insights_key               = azurerm_application_insights.this.instrumentation_key
   }
 
   identity {
@@ -65,8 +104,13 @@ resource "azurerm_linux_function_app" "this" {
   }
 
   app_settings = {
-    AzureWebJobsFeatureFlags       = "EnableWorkerIndexing"
-    GOOGLE_CLOUD_PROJECT           = var.project
-    GOOGLE_APPLICATION_CREDENTIALS = "./creds-config.json"
+    AzureWebJobsFeatureFlags = "EnableWorkerIndexing"
+    AZURE_CLIENT_ID          = azurerm_user_assigned_identity.this.client_id
+    GOOGLE_CLOUD_PROJECT     = var.project
+    RESOURCE_URI             = local.resource_uri
+  }
+
+  lifecycle {
+    ignore_changes = [tags]
   }
 }

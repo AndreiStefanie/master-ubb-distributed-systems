@@ -12,7 +12,7 @@ data "aws_iam_policy_document" "allow_integrations" {
 
     principals {
       type        = "AWS"
-      identifiers = var.aws_accounts
+      identifiers = var.monitored_aws_accounts
     }
   }
 }
@@ -28,7 +28,7 @@ resource "aws_cloudwatch_event_rule" "collector" {
   event_bus_name = aws_cloudwatch_event_bus.integrations.name
 
   event_pattern = jsonencode({
-    account = var.aws_accounts
+    account = var.monitored_aws_accounts
   })
 }
 

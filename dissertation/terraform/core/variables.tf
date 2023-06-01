@@ -26,7 +26,7 @@ variable "integrations_gcp" {
   }))
 }
 
-variable "aws_accounts" {
+variable "monitored_aws_accounts" {
   type        = set(string)
   description = "The monitored AWS accounts"
 }

@@ -30,6 +30,7 @@ provider "google" {
 provider "aws" {
   region              = var.aws_region
   allowed_account_ids = [var.rti_aws_account]
+  profile             = "caa"
 }
 
 provider "azuread" {
