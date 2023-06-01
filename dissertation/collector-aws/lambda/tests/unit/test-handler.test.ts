@@ -14,7 +14,7 @@ describe('Unit tests for AWS collector handler', function () {
     const expected: AssetEvent = {
       operation: Operation.UPDATE,
       asset: {
-        changeTime: new Date('2023-05-28T11:27:21.732Z'),
+        changeTime: '2023-05-28T11:27:21.732Z',
         deleted: false,
         id: 'arn:aws:s3:::sap-rti-bucket-test-5',
         integration: {
@@ -22,7 +22,6 @@ describe('Unit tests for AWS collector handler', function () {
           provider: 'aws',
         },
         name: 'sap-rti-bucket-test-5',
-        providerUrl: '',
         region: 'eu-west-1',
         source: testEvent.detail.configurationItem,
         type: 'AWS::S3::Bucket',

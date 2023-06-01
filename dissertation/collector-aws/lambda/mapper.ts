@@ -12,13 +12,13 @@ export const mapAWSToRTIAsset = (detail: Detail): AssetEvent => {
       id: detail.configurationItem.awsAccountId,
       provider: 'aws',
     },
-    changeTime: new Date(detail.configurationItem.configurationItemCaptureTime!),
+    changeTime: getDateString(detail.configurationItem.configurationItemCaptureTime!),
     deleted: detail.configurationItemDiff?.changeType === 'DELETE',
     name: (detail.configurationItem.resourceName || detail.configurationItem.resourceId)!,
     region: detail.configurationItem.awsRegion!,
     source: detail.configurationItem,
     type: detail.configurationItem.resourceType!,
-    version: detail.configurationItem.configurationItemCaptureTime!,
+    version: getDateString(detail.configurationItem.configurationItemCaptureTime!),
   };
 
   return {
@@ -40,3 +40,5 @@ const getOperation = (changeType?: ChangeType): Operation => {
       return Operation.CREATE;
   }
 };
+
+const getDateString = (date: string | Date): string => new Date(date).toISOString();
