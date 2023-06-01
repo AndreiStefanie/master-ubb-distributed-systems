@@ -38,14 +38,14 @@ export interface Asset {
   region: string;
 
   /**
-   * RTI-specific version (date)
+   * RTI-specific version (timestamp)
    */
   version: string;
 
   /**
    * When the last change was performed
    */
-  changeTime: Date;
+  changeTime: string;
 
   /**
    * The URL to open the asset in the provider portal.

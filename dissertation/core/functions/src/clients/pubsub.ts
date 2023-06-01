@@ -10,7 +10,7 @@ const subscriptions: Map<string, Subscription> = new Map();
 
 export const listen = <T>(
   subscriptionName: string,
-  handler: (data: T) => Promise<void>
+  handler: (data: T, messageId: string) => Promise<void>
 ) => {
   const s = pubSubClient.subscription(subscriptionName);
   subscriptions.set(subscriptionName, s);
@@ -19,7 +19,7 @@ export const listen = <T>(
     logger.debug(`Received message: ${m.id}`);
 
     try {
-      await handler(JSON.parse(m.data.toString()) as T);
+      await handler(JSON.parse(m.data.toString()) as T, m.id);
       m.ack();
     } catch (error) {
       logger.warn(`Failed to process message: ${error}`);

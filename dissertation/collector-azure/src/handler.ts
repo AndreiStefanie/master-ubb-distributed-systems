@@ -24,7 +24,9 @@ export const handleResourceEvent = async (
           provider: 'azure',
         },
         deleted: true,
-        version: eventTime,
+        version: getDateString(eventTime),
+        changeTime: getDateString(eventTime),
+        type: getResourceTypeFromAction(event.operationName),
       },
     };
   } else {
@@ -59,11 +61,23 @@ const mapAzureResourceToRTIAsset = (
     id: subscriptionId,
     provider: 'azure',
   },
-  changeTime: new Date(eventTime),
+  changeTime: getDateString(eventTime),
   deleted: false,
   name: resource.name,
   region: resource.location,
   source: resource,
   type: resource.type,
-  version: eventTime,
+  version: getDateString(eventTime),
 });
+
+/**
+ * Get the Azure-specific resource type from the operation
+ * Example: Microsoft.Storage/storageAccounts/delete -> Microsoft.Storage/storageAccounts
+ * @param action
+ * @returns
+ */
+const getResourceTypeFromAction = (action: string) =>
+  action.split('/').slice(0, -1).join('/');
+
+const getDateString = (date: string | Date): string =>
+  new Date(date).toISOString();

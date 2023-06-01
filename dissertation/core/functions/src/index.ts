@@ -1,9 +1,14 @@
 import { setGlobalOptions } from 'firebase-functions/v2';
 import { onMessagePublished } from 'firebase-functions/v2/pubsub';
-import { AssetEvent } from './dtos/asset.dto';
 import { protos } from '@google-cloud/asset';
+import { defineString } from 'firebase-functions/params';
+import { AssetEvent } from './dtos/asset.dto';
 import { handleGcpAsset } from './gcp/collector';
 import { updateInventory } from './services/inventory';
+import { updateStatistics } from './services/stats';
+
+export const bigQueryDataSet = defineString('BIGQUERY_DATASET');
+export const bigQueryTable = defineString('BIGQUERY_TABLE');
 
 const region = 'europe-central2';
 const gcpFeedTopic = 'sap-rti-topic-gcp-feed';
@@ -37,6 +42,11 @@ export const handleAsset = onMessagePublished<AssetEvent>(
     const data = event.data.message.json;
 
     // Store the current state of the asset as the main document and add the version
-    await updateInventory(data);
+    const asset = await updateInventory(data);
+    if (!asset) {
+      return;
+    }
+
+    await updateStatistics(event.id, asset, data.operation);
   }
 );

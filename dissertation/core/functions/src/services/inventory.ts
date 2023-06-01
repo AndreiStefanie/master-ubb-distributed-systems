@@ -1,12 +1,14 @@
 import { logger } from 'firebase-functions/v2';
+import { ValidationError } from 'yup';
+import * as hash from 'object-hash';
 import { AssetEvent, Operation } from '../dtos/asset.dto';
 import { collections, db } from '../clients/firestore';
-import { StatsEntry } from '../models/stats.model';
-import { Timestamp } from 'firebase-admin/firestore';
 import { validateAssetEvent } from '../validator';
-import { ValidationError } from 'yup';
+import { Asset } from '../models/asset.model';
 
-export const updateInventory = async (data: AssetEvent) => {
+export const updateInventory = async (
+  data: AssetEvent
+): Promise<Asset | null> => {
   try {
     await validateAssetEvent(data);
   } catch (error) {
@@ -17,18 +19,16 @@ export const updateInventory = async (data: AssetEvent) => {
       await db
         .collection(collections.INCOMPLETE_ASSETS)
         .add({ ...data, validationErrors: error.errors });
-      return;
+      return null;
     } else {
       console.error(error.message);
-      return;
+      return null;
     }
   }
 
-  try {
-    const ref = db
-      .collection(collections.ASSETS)
-      .doc(encodeURIComponent(data.asset.id));
+  const ref = db.collection(collections.ASSETS).doc(getAssetDocId(data.asset));
 
+  try {
     if (data.operation === Operation.DELETE) {
       // Only update the deleted and the version fields in case the asset was deleted
       const doc = await ref.get();
@@ -43,6 +43,7 @@ export const updateInventory = async (data: AssetEvent) => {
             data.asset.name || data.asset.id
           } was deleted from ${data.asset.integration.provider}`
         );
+        return null;
       }
     } else {
       await db.runTransaction(async (t) => {
@@ -55,27 +56,23 @@ export const updateInventory = async (data: AssetEvent) => {
         );
       });
     }
-
-    await updateStatistics(data);
   } catch (error) {
     logger.error(`Failed to store asset: ${error}`);
+    await db
+      .collection(collections.INCOMPLETE_ASSETS)
+      .add({ ...data, validationErrors: [error.message] });
+    return null;
   }
+
+  const doc = await ref.get();
+  if (!doc.exists) {
+    return null;
+  }
+
+  return doc.data() as Asset;
 };
+
+const getAssetDocId = (asset: Asset): string => hash(asset.id);
 
 const getAssetVersionDocId = (data: AssetEvent): string =>
   new Date(data.asset.version).valueOf().toString();
-
-const updateStatistics = async (data: AssetEvent): Promise<void> => {
-  const entry: StatsEntry = {
-    assetId: data.asset.id,
-    version: data.asset.version,
-    operation: data.operation,
-    changeTime: Timestamp.fromDate(new Date(data.asset.changeTime)),
-    inventoryTime: Timestamp.now(),
-    timeToInventoryMs:
-      Timestamp.now().toMillis() -
-      Timestamp.fromDate(new Date(data.asset.changeTime)).toMillis(),
-  };
-
-  await db.collection(collections.STATS).add(entry);
-};

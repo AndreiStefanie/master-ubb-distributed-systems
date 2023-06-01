@@ -4,6 +4,7 @@ import { AssetEvent } from './dtos/asset.dto';
 import { updateInventory } from './services/inventory';
 import { handleGcpAsset } from './gcp/collector';
 import { db } from './clients/firestore';
+import { updateStatistics } from './services/stats';
 
 db.settings({ host: 'localhost', ssl: false, port: 8080 });
 
@@ -16,7 +17,12 @@ listen<protos.google.cloud.asset.v1.TemporalAsset>(
 
 listen<AssetEvent>(
   'projects/sap-real-time-inventory-core/subscriptions/local',
-  async (data) => {
-    await updateInventory(data);
+  async (data, messageId) => {
+    const asset = await updateInventory(data);
+    if (!asset) {
+      return;
+    }
+
+    await updateStatistics(messageId, asset, data.operation);
   }
 );
