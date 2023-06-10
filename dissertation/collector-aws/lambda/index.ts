@@ -1,5 +1,4 @@
 import { EventBridgeEvent, Handler } from 'aws-lambda';
-
 import { inventoryTopic, pubSubClient } from './pubsub.client';
 import { mapAWSToRTIAsset } from './mapper';
 import { Detail } from './config';

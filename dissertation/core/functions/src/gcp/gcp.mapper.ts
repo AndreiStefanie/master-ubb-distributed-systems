@@ -34,7 +34,9 @@ const getAssetId = (
   //@ts-ignore
   source.asset?.resource?.data?.id ||
   //@ts-ignore
-  source.priorAsset?.resource?.data?.id;
+  source.priorAsset?.resource?.data?.id ||
+  // The name in Google Cloud is also unique (it is the full resource path)
+  getAssetName(source);
 
 const getAssetName = (source: protos.google.cloud.asset.v1.TemporalAsset) =>
   //@ts-ignore

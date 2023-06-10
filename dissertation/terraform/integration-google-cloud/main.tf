@@ -21,10 +21,9 @@ resource "google_cloud_asset_project_feed" "this" {
   content_type = "RESOURCE"
 
   asset_types = [
-    "compute.googleapis.com.*",
-    "storage.googleapis.com.*",
-    "cloudfunctions.googleapis.com.*",
-    "run.googleapis.com.*"
+    "storage.googleapis.com/Bucket",
+    "compute.googleapis.com/Firewall",
+    "compute.googleapis.com/Disk"
   ]
 
   feed_output_config {

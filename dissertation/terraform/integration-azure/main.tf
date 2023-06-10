@@ -46,11 +46,12 @@ resource "azurerm_eventgrid_system_topic_event_subscription" "this" {
 
   advanced_filtering_on_arrays_enabled = true
   advanced_filter {
-    string_contains {
-      key = "subject"
+    string_begins_with {
+      key = "data.operationName"
       values = [
-        "/providers/Microsoft.Storage/storageAccounts/",
-        "/providers/Microsoft.Compute/virtualMachines/",
+        "Microsoft.Storage/storageAccounts/",
+        "Microsoft.Network/networkSecurityGroups/",
+        "Microsoft.Compute/disks/"
       ]
     }
   }

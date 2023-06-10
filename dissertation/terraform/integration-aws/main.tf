@@ -37,8 +37,12 @@ resource "aws_config_configuration_recorder" "this" {
   role_arn = aws_iam_role.config.arn
 
   recording_group {
-    all_supported  = false
-    resource_types = ["AWS::EC2::Instance", "AWS::S3::Bucket", "AWS::Lambda::Function"]
+    all_supported = false
+    resource_types = [
+      "AWS::S3::Bucket",
+      "AWS::EC2::SecurityGroup",
+      "AWS::EC2::Volume",
+    ]
   }
 }
 
@@ -99,7 +103,7 @@ data "aws_iam_policy_document" "event_bus_invoke_remote_event_bus" {
   statement {
     effect    = "Allow"
     actions   = ["events:PutEvents"]
-    resources = [var.rti_eventbridge_arn]
+    resources = [var.rti_eventbridge_arn] // The EventBridge bus from the integration account
   }
 }
 
