@@ -39,3 +39,11 @@ variable "lambda_src_path" {
   type        = string
   description = "The directory containing the compiled code for the AWS integration Lambda"
 }
+
+variable "monitored_azure_credentials" {
+  type = map(object({
+    client_id = string
+    secret    = string
+  }))
+  description = "Map with secrets used for reading the resources. The key must be the subscription ID"
+}

@@ -1,3 +1,6 @@
-subscription_id = "ced525b8-ae72-4ebe-b640-45c46e4f7d15"
-
-function_id = "/subscriptions/ced525b8-ae72-4ebe-b640-45c46e4f7d15/resourceGroups/rg-rti/providers/Microsoft.Web/sites/func-sap-rti-collector/functions/collector"
+subscription_id                = "6df41622-41b3-4bc3-bc18-8debd3d2820b"
+webhook_url                    = "https://func-sap-rti-collector.azurewebsites.net/api/collectorWebhook"
+rti_tenant_id                  = "0d5964ac-4c8f-4916-8325-8956793a5be4"
+rti_managed_identity_object_id = "7136eb5b-d40b-4a5b-9622-81010456faf3"
+rti_audience                   = "api://real-time-inventory"
+# rti_app_id = "value"

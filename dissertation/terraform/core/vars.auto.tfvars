@@ -17,3 +17,10 @@ monitored_aws_accounts = ["201157465182"]
 aws_region             = "eu-west-1"
 
 lambda_src_path = "/Users/andrei/Projects/master-ubb-distributed-systems/dissertation/collector-aws/.aws-sam/build/AWSCollectorFunction"
+
+monitored_azure_credentials = {
+  "6df41622-41b3-4bc3-bc18-8debd3d2820b" = {
+    client_id = "cac5c835-d6d5-43d3-a3db-5ddf2a8a5be7"
+    secret    = "YRD8Q~S8dg0Ih6R2zXGzAMT7c2Dw6gdbajpjAa1i"
+  }
+}

@@ -2,7 +2,7 @@ import {
   ResourceDeleteSuccessEventData,
   ResourceWriteSuccessEventData,
 } from '@azure/eventgrid';
-import { rmClient } from './clients/resources.client';
+import { getRMClient } from './clients/resources.client';
 import { GenericResource } from '@azure/arm-resources';
 import { Asset, AssetEvent, Operation } from './asset.model';
 import { inventoryTopic, pubSubClient } from './clients/pubsub.client';
@@ -31,6 +31,7 @@ export const handleResourceEvent = async (
     };
   } else {
     // Get the current resource state
+    const rmClient = await getRMClient(event.subscriptionId, event.tenantId);
     const resource = await rmClient.resources.getById(
       event.resourceUri,
       '2022-09-01'
