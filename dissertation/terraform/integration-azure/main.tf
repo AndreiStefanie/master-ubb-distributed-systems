@@ -5,6 +5,14 @@ terraform {
       version = "3.58.0"
     }
   }
+
+  cloud {
+    organization = "andreistefanie"
+
+    workspaces {
+      name = "monitored-azure-fincorp"
+    }
+  }
 }
 
 provider "azurerm" {
