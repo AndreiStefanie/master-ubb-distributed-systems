@@ -12,7 +12,8 @@ export async function collector(
       //@ts-ignore
       event.data,
       event.eventTime,
-      event.eventType
+      event.eventType,
+      context
     );
   } catch (error) {
     context.error(`Could not handle Azure event: ${error}`);
