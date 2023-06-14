@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "5.3.0"
     }
   }
 }
@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "config" {
 }
 
 resource "aws_iam_role" "config" {
-  name                = "AWSConfigRole"
+  name                = "AWSConfigRole-${var.region}"
   assume_role_policy  = data.aws_iam_policy_document.config.json
   managed_policy_arns = ["arn:aws:iam::aws:policy/service-role/AWS_ConfigRole"]
 }
@@ -53,7 +53,7 @@ resource "aws_config_delivery_channel" "this" {
 }
 
 resource "aws_s3_bucket" "config" {
-  bucket        = "sap-rti-config-bucket"
+  bucket        = "bucket-sap-rti-${var.region}-config"
   force_destroy = true
 }
 
@@ -95,7 +95,7 @@ data "aws_iam_policy_document" "eventbridge" {
 }
 
 resource "aws_iam_role" "event_bus_invoke_remote_event_bus" {
-  name               = "RTIInvokeRemoteEventBus"
+  name               = "RTIInvokeRemoteEventBus-${var.region}"
   assume_role_policy = data.aws_iam_policy_document.eventbridge.json
 }
 
@@ -108,7 +108,7 @@ data "aws_iam_policy_document" "event_bus_invoke_remote_event_bus" {
 }
 
 resource "aws_iam_policy" "event_bus_invoke_remote_event_bus" {
-  name   = "RTIInvokeRemoteEventBus"
+  name   = "RTIInvokeRemoteEventBus-${var.region}"
   policy = data.aws_iam_policy_document.event_bus_invoke_remote_event_bus.json
 }
 
