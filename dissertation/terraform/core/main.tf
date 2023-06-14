@@ -116,3 +116,83 @@ resource "google_pubsub_topic_iam_member" "collectors" {
   role   = "roles/pubsub.publisher"
   member = "serviceAccount:${google_service_account.this.email}"
 }
+
+resource "google_bigquery_dataset" "this" {
+  dataset_id    = "rti"
+  friendly_name = "rti_dataset"
+  description   = "Real-Time Inventory Data Set"
+  location      = "EU"
+}
+
+resource "google_bigquery_table" "stats" {
+  dataset_id = google_bigquery_dataset.this.dataset_id
+  table_id   = "stats"
+
+  schema = <<EOF
+[
+  {
+    "name": "assetId",
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "version",
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "operation",
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "changeTime",
+    "mode": "NULLABLE",
+    "type": "TIMESTAMP",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "inventoryTime",
+    "mode": "NULLABLE",
+    "type": "TIMESTAMP",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "timeToInventoryMs",
+    "mode": "NULLABLE",
+    "type": "NUMERIC",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "assetType",
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "provider",
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "region",
+    "mode": "NULLABLE",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  }
+]
+EOF
+}
