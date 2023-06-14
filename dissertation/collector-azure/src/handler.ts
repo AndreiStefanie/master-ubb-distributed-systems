@@ -11,14 +11,16 @@ import { InvocationContext } from '@azure/functions';
 export const handleResourceEvent = async (
   event: ResourceWriteSuccessEventData | ResourceDeleteSuccessEventData,
   eventTime: string,
-  eventType: 'ResourceWriteSuccess' | 'ResourceDeleteSuccess',
+  eventType:
+    | 'Microsoft.Resources.ResourceWriteSuccess'
+    | 'Microsoft.Resources.ResourceDeleteSuccess',
   context: InvocationContext
 ) => {
   // Map the resource to RTI asset
   let assetEvent: AssetEvent;
   const resourceType = getResourceTypeFromAction(event.operationName);
 
-  if (eventType === 'ResourceDeleteSuccess') {
+  if (eventType === 'Microsoft.Resources.ResourceDeleteSuccess') {
     assetEvent = {
       operation: Operation.DELETE,
       asset: {
