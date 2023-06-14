@@ -46,11 +46,20 @@ export const handleResourceEvent = async (
       // TODO: Find a way to detect if the resource was created with this event or updated
       assetEvent = {
         operation: Operation.UPDATE,
-        asset: mapAzureResourceToRTIAsset(
-          resource,
-          event.subscriptionId,
-          eventTime
-        ),
+        asset: {
+          id: event.resourceUri,
+          integration: {
+            id: event.subscriptionId,
+            provider: 'azure',
+          },
+          deleted: false,
+          changeTime: getDateString(eventTime),
+          version: getDateString(eventTime),
+          type: resource.type,
+          name: resource.name,
+          region: resource.location,
+          source: resource,
+        },
       };
     } catch (error) {
       context.warn(`Could not read resource ${event.resourceUri}. ${error}`);
@@ -61,25 +70,6 @@ export const handleResourceEvent = async (
   // Push the asset to the core Pub/Sub
   await pubSubClient.topic(inventoryTopic).publishMessage({ json: assetEvent });
 };
-
-const mapAzureResourceToRTIAsset = (
-  resource: GenericResource,
-  subscriptionId: string,
-  eventTime: string
-): Asset => ({
-  id: resource.id,
-  integration: {
-    id: subscriptionId,
-    provider: 'azure',
-  },
-  changeTime: getDateString(eventTime),
-  deleted: false,
-  name: resource.name,
-  region: resource.location,
-  source: resource,
-  type: resource.type,
-  version: getDateString(eventTime),
-});
 
 /**
  * Get the Azure-specific resource type from the operation
