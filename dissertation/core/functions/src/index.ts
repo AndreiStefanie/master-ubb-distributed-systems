@@ -29,7 +29,10 @@ export const googleCloudCollector =
         'collectors@sap-real-time-inventory-core.iam.gserviceaccount.com',
     },
     async (event) => {
-      await handleGcpAsset(event.data.message.json);
+      await handleGcpAsset(
+        event.data.message.json,
+        event.data.message.publishTime
+      );
     }
   );
 

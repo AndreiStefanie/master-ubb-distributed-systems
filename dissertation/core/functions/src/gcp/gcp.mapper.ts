@@ -1,30 +1,52 @@
 import { protos } from '@google-cloud/asset';
 import { providers } from '../common';
-import { Operation } from '../dtos/asset.dto';
-import { Asset } from '../models/asset.model';
+import { AssetEvent, Operation } from '../dtos/asset.dto';
 
 export const mapGCPToRTIAsset = (
-  source: protos.google.cloud.asset.v1.TemporalAsset
-): Asset => {
-  const gcpAsset = source.asset || source.priorAsset;
+  source: protos.google.cloud.asset.v1.TemporalAsset,
+  eventTime: string
+): AssetEvent => {
+  if (source.deleted) {
+    if (!source.priorAsset) {
+      throw new Error(`Missing prior asset for deleted asset`);
+    }
 
-  if (!gcpAsset || !gcpAsset.resource) {
+    return {
+      operation: Operation.DELETE,
+      asset: {
+        id: getAssetId(source),
+        changeTime: getDateString(eventTime),
+        deleted: true,
+        integration: {
+          id: getIntegrationId(source),
+          provider: providers.GOOGLE_CLOUD,
+        },
+        type: source.priorAsset.assetType!,
+        version: getDateString(eventTime),
+        name: getAssetName(source),
+      },
+    };
+  }
+  if (!source.asset || !source.asset.resource) {
     throw new Error('No asset info');
   }
 
   return {
-    integration: {
-      id: getIntegrationId(source),
-      provider: providers.GOOGLE_CLOUD,
+    operation: getOperation(source),
+    asset: {
+      integration: {
+        id: getIntegrationId(source),
+        provider: providers.GOOGLE_CLOUD,
+      },
+      id: getAssetId(source),
+      name: getAssetName(source),
+      region: source.asset.resource?.location || 'global',
+      type: source.asset.assetType!,
+      version: getDateString(source.asset.updateTime as string),
+      changeTime: getDateString(source.asset.updateTime as string),
+      deleted: false,
+      source: source.asset.resource.data,
     },
-    id: getAssetId(source),
-    name: getAssetName(source),
-    region: gcpAsset.resource?.location || '',
-    type: gcpAsset.assetType!,
-    version: getDateString(gcpAsset.updateTime as string),
-    changeTime: getDateString(gcpAsset.updateTime as string),
-    deleted: source.deleted || false,
-    source: gcpAsset.resource.data,
   };
 };
 

@@ -49,7 +49,7 @@ export interface Asset {
   /**
    * The data as received from the provider.
    */
-  source: any;
+  source?: any;
 }
 
 export interface Integration {

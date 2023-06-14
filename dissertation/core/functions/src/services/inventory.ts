@@ -36,7 +36,11 @@ export const updateInventory = async (
       const doc = await ref.get();
       if (doc.exists) {
         await ref.set(
-          { deleted: true, version: data.asset.version },
+          {
+            deleted: true,
+            version: data.asset.version,
+            changeTime: data.asset.changeTime,
+          },
           { merge: true }
         );
       } else {

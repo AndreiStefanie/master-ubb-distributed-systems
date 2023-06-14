@@ -1,21 +1,17 @@
 import { protos } from '@google-cloud/asset';
-import { getOperation, mapGCPToRTIAsset } from './gcp.mapper';
+import { mapGCPToRTIAsset } from './gcp.mapper';
 import { logger } from 'firebase-functions/v2';
-import { AssetEvent } from '../dtos/asset.dto';
 import { inventoryTopic, pubSubClient } from '../clients/pubsub';
 
 export const handleGcpAsset = async (
-  data: protos.google.cloud.asset.v1.TemporalAsset
+  data: protos.google.cloud.asset.v1.TemporalAsset,
+  eventTime: string
 ) => {
-  const asset = mapGCPToRTIAsset(data);
-  logger.debug(
-    `Received event for ${asset.name}, prior asset state: ${data.priorAssetState}`
-  );
+  const assetEvent = mapGCPToRTIAsset(data, eventTime);
 
-  const assetEvent: AssetEvent = {
-    asset,
-    operation: getOperation(data),
-  };
+  logger.debug(
+    `Received event for ${assetEvent.asset.name}, prior asset state: ${data.priorAssetState}`
+  );
 
   try {
     await pubSubClient

@@ -10,8 +10,8 @@ db.settings({ host: 'localhost', ssl: false, port: 8080 });
 
 listen<protos.google.cloud.asset.v1.TemporalAsset>(
   'projects/sap-real-time-inventory-core/subscriptions/local-feed',
-  async (data) => {
-    await handleGcpAsset(data);
+  async (data, _, publishTime) => {
+    await handleGcpAsset(data, publishTime);
   }
 );
 

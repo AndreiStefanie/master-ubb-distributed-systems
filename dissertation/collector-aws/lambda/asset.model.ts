@@ -23,7 +23,7 @@ export interface Asset {
   /**
    * The name of the asset (where available)
    */
-  name: string;
+  name?: string;
 
   /**
    * Provider-specific type of the asset.
@@ -35,7 +35,7 @@ export interface Asset {
    * Provider-specific region where applicable. "global" otherwise
    * E.g. eu-west-1
    */
-  region: string;
+  region?: string;
 
   /**
    * RTI-specific version (timestamp)
@@ -60,7 +60,7 @@ export interface Asset {
   /**
    * The data as received from the provider.
    */
-  source: any;
+  source?: any;
 }
 
 export interface Integration {
