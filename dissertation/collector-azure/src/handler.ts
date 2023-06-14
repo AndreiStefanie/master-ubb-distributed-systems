@@ -3,8 +3,7 @@ import {
   ResourceWriteSuccessEventData,
 } from '@azure/eventgrid';
 import { rmClient } from './clients/resources.client';
-import { GenericResource } from '@azure/arm-resources';
-import { Asset, AssetEvent, Operation } from './asset.model';
+import { AssetEvent, Operation } from './asset.model';
 import { inventoryTopic, pubSubClient } from './clients/pubsub.client';
 import { InvocationContext } from '@azure/functions';
 

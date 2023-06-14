@@ -21,8 +21,8 @@ export const mapGCPToRTIAsset = (
     name: getAssetName(source),
     region: gcpAsset.resource?.location || '',
     type: gcpAsset.assetType!,
-    version: gcpAsset.updateTime as string,
-    changeTime: gcpAsset.updateTime as string,
+    version: getDateString(gcpAsset.updateTime as string),
+    changeTime: getDateString(gcpAsset.updateTime as string),
     deleted: source.deleted || false,
     source: gcpAsset.resource.data,
   };
@@ -82,3 +82,6 @@ export const getOperation = (
 
   return Operation.CREATE;
 };
+
+const getDateString = (date: string | Date): string =>
+  new Date(date).toISOString();
