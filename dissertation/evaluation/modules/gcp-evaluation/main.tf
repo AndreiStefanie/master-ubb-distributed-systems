@@ -37,7 +37,6 @@ data "google_compute_network" "default" {
   name = "default"
 }
 
-
 resource "google_compute_firewall" "this" {
   count = var.resource_count
 
