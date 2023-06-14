@@ -1,16 +1,15 @@
 import { BigQuery } from '@google-cloud/bigquery';
 import { bigQueryDataSet, bigQueryTable } from '..';
-import { Operation } from '../dtos/asset.dto';
+import { AssetEvent } from '../dtos/asset.dto';
 import { StatsEntry } from '../models/stats.model';
-import { Asset } from '../models/asset.model';
 
 const bigQuery = new BigQuery();
 
 export const updateStatistics = async (
   eventId: string,
-  asset: Asset,
-  operation: Operation
+  data: AssetEvent
 ): Promise<void> => {
+  const { asset, operation } = data;
   const entry: StatsEntry = {
     assetId: asset.id,
     version: asset.version,

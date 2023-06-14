@@ -42,11 +42,11 @@ export const handleAsset = onMessagePublished<AssetEvent>(
     const data = event.data.message.json;
 
     // Store the current state of the asset as the main document and add the version
-    const asset = await updateInventory(data);
-    if (!asset) {
+    const result = await updateInventory(data);
+    if (!result) {
       return;
     }
 
-    await updateStatistics(event.id, asset, data.operation);
+    await updateStatistics(event.id, result);
   }
 );

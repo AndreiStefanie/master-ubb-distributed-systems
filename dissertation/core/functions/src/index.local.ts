@@ -18,11 +18,11 @@ listen<protos.google.cloud.asset.v1.TemporalAsset>(
 listen<AssetEvent>(
   'projects/sap-real-time-inventory-core/subscriptions/local',
   async (data, messageId) => {
-    const asset = await updateInventory(data);
-    if (!asset) {
+    const result = await updateInventory(data);
+    if (!result) {
       return;
     }
 
-    await updateStatistics(messageId, asset, data.operation);
+    await updateStatistics(messageId, result);
   }
 );
