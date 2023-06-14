@@ -1,1 +1,1 @@
-resource_count = 5
+resource_count = 10
