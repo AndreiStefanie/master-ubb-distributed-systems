@@ -64,14 +64,14 @@ export const updateInventory = async (
           operation = Operation.CREATE;
         }
       }
+
+      const versionRef = ref
+        .collection(collections.ASSET_VERSIONS)
+        .doc(getAssetVersionDocId(data));
+
       await db.runTransaction(async (t) => {
         t.set(ref, data.asset);
-        t.create(
-          ref
-            .collection(collections.ASSET_VERSIONS)
-            .doc(getAssetVersionDocId(data)),
-          data.asset
-        );
+        t.set(versionRef, data.asset);
       });
     }
   } catch (error) {
