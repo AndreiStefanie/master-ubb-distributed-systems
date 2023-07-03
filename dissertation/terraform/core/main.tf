@@ -133,65 +133,47 @@ resource "google_bigquery_table" "stats" {
   {
     "name": "assetId",
     "mode": "NULLABLE",
-    "type": "STRING",
-    "description": null,
-    "fields": []
+    "type": "STRING"
   },
   {
     "name": "version",
     "mode": "NULLABLE",
-    "type": "STRING",
-    "description": null,
-    "fields": []
+    "type": "STRING"
   },
   {
     "name": "operation",
     "mode": "NULLABLE",
-    "type": "STRING",
-    "description": null,
-    "fields": []
+    "type": "STRING"
   },
   {
     "name": "changeTime",
     "mode": "NULLABLE",
-    "type": "TIMESTAMP",
-    "description": null,
-    "fields": []
+    "type": "TIMESTAMP"
   },
   {
     "name": "inventoryTime",
     "mode": "NULLABLE",
-    "type": "TIMESTAMP",
-    "description": null,
-    "fields": []
+    "type": "TIMESTAMP"
   },
   {
     "name": "timeToInventoryMs",
     "mode": "NULLABLE",
-    "type": "NUMERIC",
-    "description": null,
-    "fields": []
+    "type": "NUMERIC"
   },
   {
     "name": "assetType",
     "mode": "NULLABLE",
-    "type": "STRING",
-    "description": null,
-    "fields": []
+    "type": "STRING"
   },
   {
     "name": "provider",
     "mode": "NULLABLE",
-    "type": "STRING",
-    "description": null,
-    "fields": []
+    "type": "STRING"
   },
   {
     "name": "region",
     "mode": "NULLABLE",
-    "type": "STRING",
-    "description": null,
-    "fields": []
+    "type": "STRING"
   }
 ]
 EOF
