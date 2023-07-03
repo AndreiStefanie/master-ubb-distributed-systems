@@ -13,6 +13,8 @@ export const handler: Handler = async (
 
     await pubSubClient.topic(inventoryTopic).publishMessage({ json: assetEvent });
   } catch (error) {
+    console.debug(JSON.stringify(event.detail));
+
     console.error(`Could not handle AWS asset: ${error}`);
   }
 };

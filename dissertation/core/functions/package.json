@@ -21,6 +21,7 @@
     "@google-cloud/asset": "^4.6.3",
     "@google-cloud/bigquery": "^6.2.0",
     "@google-cloud/pubsub": "^3.6.0",
+    "axios": "^1.4.0",
     "firebase-admin": "^11.8.0",
     "firebase-functions": "^4.4.1",
     "object-hash": "^3.0.0",
