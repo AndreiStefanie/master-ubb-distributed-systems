@@ -37,6 +37,7 @@ export interface ConfigurationItem {
   resourceType: string;
   resourceId: string;
   resourceName: string;
+  resourceCreationTime?: string;
   ARN: string;
   awsRegion: string;
   availabilityZone: string;
